@@ -24,17 +24,23 @@
 
 namespace fkooman\Otp;
 
-use Otp\Otp;
+use DateTime;
 use ParagonIE\ConstantTime\Base32;
 
-class CrOtpVerifier implements OtpVerifierInterface
+class FrkOtpVerifier implements OtpVerifierInterface
 {
-    /** @var \Otp\Otp */
-    private $otp;
+    /** @var \DateTime */
+    private $dateTime;
 
-    public function __construct()
+    /**
+     * @param null|\DateTime $dateTime
+     */
+    public function __construct(DateTime $dateTime = null)
     {
-        $this->otp = new Otp();
+        if (null === $dateTime) {
+            $dateTime = new DateTime();
+        }
+        $this->dateTime = $dateTime;
     }
 
     /**
@@ -45,6 +51,8 @@ class CrOtpVerifier implements OtpVerifierInterface
      */
     public function verify($totpSecret, $totpKey)
     {
-        return $this->otp->checkTotp(Base32::decodeUpper($totpSecret), $totpKey);
+        $frkOtp = new FrkOtp($this->dateTime);
+
+        return $frkOtp->verify(Base32::decodeUpper($totpSecret), $totpKey);
     }
 }

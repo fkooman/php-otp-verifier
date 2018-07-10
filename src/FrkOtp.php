@@ -27,7 +27,7 @@ namespace fkooman\Otp;
 use DateTime;
 use RuntimeException;
 
-class FrkOtp implements OtpVerifierInterface
+class FrkOtp
 {
     const DEFAULT_ALGORITHM = 'sha1';
     const DEFAULT_DIGITS = 6;
