@@ -21,6 +21,7 @@
     "require": {
         "ext-date": "*",
         "ext-hash": "*",
+        "ext-pdo": "*",
         "ext-spl": "*",
         "paragonie/constant_time_encoding": "^1|^2",
         "paragonie/random_compat": ">=1",
