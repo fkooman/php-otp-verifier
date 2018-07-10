@@ -1,9 +1,9 @@
-PHP library to verify TOTP codes and protect against replay and brute force 
+PHP library to verify OTP codes and protect against replay and brute force 
 attacks with support for PHP >= 5.4.
 
 # Why
 
-High quality TOTP verification libraries exist, e.g. 
+High quality OTP verification libraries exist, e.g. 
 [christian-riesen/otp](https://github.com/ChristianRiesen/otp) and 
 [spomky-labs/otphp](https://github.com/Spomky-Labs/otphp) which are popular and
 work well, however, they lack built-in support for protection against replay 
