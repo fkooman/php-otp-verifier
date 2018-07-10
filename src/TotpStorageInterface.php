@@ -31,20 +31,17 @@ interface TotpStorageInterface
     /**
      * @param string $userId
      *
-     * @return false|array<string, string>
+     * @return false|string
      */
     public function getTotpSecret($userId);
 
     /**
      * @param string $userId
      * @param string $secret
-     * @param string $algorithm
-     * @param int    $digits
-     * @param int    $period
      *
-     * @return bool
+     * @return void
      */
-    public function setTotpSecret($userId, $secret, $algorithm, $digits, $period);
+    public function setTotpSecret($userId, $secret);
 
     /**
      * @param string $userId

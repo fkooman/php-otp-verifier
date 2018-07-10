@@ -46,41 +46,29 @@ class Storage implements TotpStorageInterface
     /**
      * @param string $userId
      *
-     * @return false|array<string, string>
+     * @return false|string
      */
     public function getTotpSecret($userId)
     {
-        $stmt = $this->dbh->prepare('SELECT secret, algorithm, digits, period FROM totp WHERE user_id = :user_id');
+        $stmt = $this->dbh->prepare('SELECT secret FROM totp WHERE user_id = :user_id');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
         $stmt->execute();
 
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetchColumn();
     }
 
     /**
      * @param string $userId
      * @param string $secret
-     * @param string $algorithm
-     * @param int    $digits
-     * @param int    $period
      *
-     * @return bool
+     * @return void
      */
-    public function setTotpSecret($userId, $secret, $algorithm, $digits, $period)
+    public function setTotpSecret($userId, $secret)
     {
-        try {
-            $stmt = $this->dbh->prepare('INSERT INTO totp (user_id, secret, algorithm, digits, period) VALUES(:user_id, :secret, :algorithm, :digits, :period)');
-            $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
-            $stmt->bindValue(':secret', $secret, PDO::PARAM_STR);
-            $stmt->bindValue(':algorithm', $algorithm, PDO::PARAM_STR);
-            $stmt->bindValue(':digits', $digits, PDO::PARAM_INT);
-            $stmt->bindValue(':period', $period, PDO::PARAM_INT);
-            $stmt->execute();
-
-            return true;
-        } catch (PDOException $e) {
-            return false;
-        }
+        $stmt = $this->dbh->prepare('INSERT INTO totp (user_id, secret) VALUES(:user_id, :secret)');
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
+        $stmt->bindValue(':secret', $secret, PDO::PARAM_STR);
+        $stmt->execute();
     }
 
     /**
@@ -153,19 +141,16 @@ class Storage implements TotpStorageInterface
 <<<'EOT'
 CREATE TABLE totp(
   user_id VARCHAR(255) NOT NULL PRIMARY KEY UNIQUE,
-  secret VARCHAR(255) NOT NULL,
-  algorithm VARCHAR(255) NOT NULL,
-  digits INTEGER NOT NULL,
-  period INTEGER NOT NULL
+  secret VARCHAR(255) NOT NULL
 )
 EOT
         );
         $this->dbh->exec(
 <<<'EOT'
 CREATE TABLE totp_log(
+  user_id VARCHAR(255) NOT NULL REFERENCES totp(user_id) ON DELETE CASCADE,
   totp_key VARCHAR(255) NOT NULL,
   date_time DATETIME NOT NULL,
-  user_id VARCHAR(255) NOT NULL REFERENCES totp(user_id) ON DELETE CASCADE,
   UNIQUE(user_id, totp_key)
 )
 EOT

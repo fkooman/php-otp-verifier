@@ -30,9 +30,6 @@ use ParagonIE\ConstantTime\Base32;
 
 class Totp
 {
-    const ALGORITHM = 'sha1';
-    const DIGITS = 6;
-    const PERIOD = 30;
     const SECRET_SIZE_BYTES = 20;    // 160 bits
 
     /** @var Storage */
@@ -87,7 +84,7 @@ class Totp
     public function register($userId)
     {
         $totpSecret = Base32::encodeUpper($this->random->get(self::SECRET_SIZE_BYTES));
-        $this->storage->setTotpSecret($userId, $totpSecret, self::ALGORITHM, self::DIGITS, self::PERIOD);
+        $this->storage->setTotpSecret($userId, $totpSecret);
     }
 
     /**
@@ -98,7 +95,7 @@ class Totp
      */
     public function verify($userId, $totpKey)
     {
-        if (false === $totp = $this->storage->getTotpSecret($userId)) {
+        if (false === $totpSecret = $this->storage->getTotpSecret($userId)) {
             throw new TotpException('user has no TOTP secret');
         }
 
@@ -112,6 +109,6 @@ class Totp
             throw new TotpException('too many attempts at TOTP');
         }
 
-        return $this->otpVerifier->verify(Base32::decodeUpper($totp['secret']), $totpKey);
+        return $this->otpVerifier->verify(Base32::decodeUpper($totpSecret), $totpKey);
     }
 }
