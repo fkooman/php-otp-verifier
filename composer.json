@@ -19,6 +19,9 @@
     "license": "MIT",
     "name": "fkooman/totp-verifier",
     "require": {
+        "ext-date": "*",
+        "ext-hash": "*",
+        "ext-spl": "*",
         "paragonie/constant_time_encoding": "^1|^2",
         "php": ">= 5.4"
     },
