@@ -7,18 +7,19 @@
     ],
     "autoload": {
         "psr-4": {
-            "fkooman\\Totp\\": "src/"
+            "fkooman\\Otp\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "fkooman\\Totp\\Tests\\": "tests/"
+            "fkooman\\Otp\\Tests\\": "tests/"
         }
     },
-    "description": "TOTP Validation Library",
+    "description": "OTP Validation Library",
     "license": "MIT",
-    "name": "fkooman/totp-verifier",
+    "name": "fkooman/otp-verifier",
     "require": {
+        "christian-riesen/otp": "^2",
         "ext-date": "*",
         "ext-hash": "*",
         "ext-pdo": "*",
@@ -33,7 +34,7 @@
     },
     "support": {
         "email": "fkooman@tuxed.net",
-        "source": "https://git.tuxed.net/fkooman/php-totp-verifier"
+        "source": "https://git.tuxed.net/fkooman/php-otp-verifier"
     },
     "type": "library"
 }

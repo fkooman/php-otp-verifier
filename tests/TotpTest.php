@@ -22,13 +22,12 @@
  * SOFTWARE.
  */
 
-namespace fkooman\Totp\Tests;
+namespace fkooman\Otp\Tests;
 
 use DateTime;
-use fkooman\Totp\Exception\TotpException;
-use fkooman\Totp\Otp;
-use fkooman\Totp\Storage;
-use fkooman\Totp\Totp;
+use fkooman\Otp\Exception\OtpException;
+use fkooman\Otp\Storage;
+use fkooman\Otp\Totp;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
@@ -47,7 +46,7 @@ class TotpTest extends TestCase
         $dateTime = new DateTime('2018-01-01 08:00:00');
         $this->totp = new Totp(
             $storage,
-            new Otp($dateTime)
+            new TestVerifier()
         );
         $this->totp->setDateTime($dateTime);
         $this->totp->setRandom(new TestRandom());
@@ -70,7 +69,7 @@ class TotpTest extends TestCase
         try {
             $this->totp->verify('foo', '352223');
             $this->fail();
-        } catch (TotpException $e) {
+        } catch (OtpException $e) {
             $this->assertSame('replay of TOTP code', $e->getMessage());
         }
     }
@@ -88,7 +87,7 @@ class TotpTest extends TestCase
         try {
             $this->totp->verify('foo', '555555');
             $this->fail();
-        } catch (TotpException $e) {
+        } catch (OtpException $e) {
             $this->assertSame('too many attempts at TOTP', $e->getMessage());
         }
     }

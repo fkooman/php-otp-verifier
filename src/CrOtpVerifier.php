@@ -24,13 +24,26 @@
 
 namespace fkooman\Otp;
 
-interface OtpVerifierInterface
+use Otp\Otp;
+
+class CrOtpVerifier implements OtpVerifierInterface
 {
+    /** @var \Otp\Otp */
+    private $otp;
+
+    public function __construct()
+    {
+        $this->otp = new Otp();
+    }
+
     /**
      * @param string $totpSecret
      * @param string $totpKey
      *
      * @return bool
      */
-    public function verify($totpSecret, $totpKey);
+    public function verify($totpSecret, $totpKey)
+    {
+        return $this->otp->checkTotp($totpSecret, $totpKey);
+    }
 }

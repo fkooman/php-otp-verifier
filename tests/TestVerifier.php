@@ -22,10 +22,24 @@
  * SOFTWARE.
  */
 
-namespace fkooman\Totp\Exception;
+namespace fkooman\Otp\Tests;
 
-use Exception;
+use fkooman\Otp\OtpVerifierInterface;
 
-class TotpException extends Exception
+class TestVerifier implements OtpVerifierInterface
 {
+    /**
+     * @param string $totpSecret
+     * @param string $totpKey
+     *
+     * @return bool
+     */
+    public function verify($totpSecret, $totpKey)
+    {
+        if ('352223' === $totpKey) {
+            return true;
+        }
+
+        return false;
+    }
 }

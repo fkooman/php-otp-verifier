@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-namespace fkooman\Totp;
+namespace fkooman\Otp;
 
 interface RandomInterface
 {

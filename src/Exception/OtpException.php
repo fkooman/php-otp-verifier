@@ -22,61 +22,10 @@
  * SOFTWARE.
  */
 
-namespace fkooman\Totp;
+namespace fkooman\Otp\Exception;
 
-use DateTime;
+use Exception;
 
-interface TotpStorageInterface
+class OtpException extends Exception
 {
-    /**
-     * @param string $userId
-     *
-     * @return bool
-     */
-    public function hasTotpSecret($userId);
-
-    /**
-     * @param string $userId
-     *
-     * @return false|string
-     */
-    public function getTotpSecret($userId);
-
-    /**
-     * @param string $userId
-     * @param string $secret
-     *
-     * @return void
-     */
-    public function setTotpSecret($userId, $secret);
-
-    /**
-     * @param string $userId
-     *
-     * @return void
-     */
-    public function deleteTotpSecret($userId);
-
-    /**
-     * @param string $userId
-     *
-     * @return int
-     */
-    public function getTotpAttemptCount($userId);
-
-    /**
-     * @param string    $userId
-     * @param string    $totpKey
-     * @param \DateTime $dateTime
-     *
-     * @return bool
-     */
-    public function recordTotpKey($userId, $totpKey, DateTime $dateTime);
-
-    /**
-     * @param \DateTime $dateTime
-     *
-     * @return void
-     */
-    public function cleanTotpLog(DateTime $dateTime);
 }

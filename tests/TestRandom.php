@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-namespace fkooman\Totp\Tests;
+namespace fkooman\Otp\Tests;
 
-use fkooman\Totp\RandomInterface;
+use fkooman\Otp\RandomInterface;
 
 class TestRandom implements RandomInterface
 {

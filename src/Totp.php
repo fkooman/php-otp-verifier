@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-namespace fkooman\Totp;
+namespace fkooman\Otp;
 
 use DateTime;
-use fkooman\Totp\Exception\TotpException;
+use fkooman\Otp\Exception\OtpException;
 use ParagonIE\ConstantTime\Base32;
 
 class Totp
@@ -83,11 +83,11 @@ class Totp
      */
     public function register($userId)
     {
-        if ($this->storage->hasTotpSecret($userId)) {
-            throw new TotpException(\sprintf('user "%s" already has a TOTP secret', $userId));
+        if ($this->storage->hasOtpSecret($userId)) {
+            throw new OtpException(\sprintf('user "%s" already has a TOTP secret', $userId));
         }
         $totpSecret = Base32::encodeUpper($this->random->get(self::SECRET_SIZE_BYTES));
-        $this->storage->setTotpSecret($userId, $totpSecret);
+        $this->storage->setOtpSecret($userId, $totpSecret);
     }
 
     /**
@@ -98,18 +98,18 @@ class Totp
      */
     public function verify($userId, $totpKey)
     {
-        if (false === $totpSecret = $this->storage->getTotpSecret($userId)) {
-            throw new TotpException('user has no TOTP secret');
+        if (false === $totpSecret = $this->storage->getOtpSecret($userId)) {
+            throw new OtpException('user has no TOTP secret');
         }
 
         // store the attempt even before validating it, to be able to count
         // the (failed) attempts and also replay attacks
-        if (false === $this->storage->recordTotpKey($userId, $totpKey, $this->dateTime)) {
-            throw new TotpException('replay of TOTP code');
+        if (false === $this->storage->recordOtpKey($userId, $totpKey, $this->dateTime)) {
+            throw new OtpException('replay of TOTP code');
         }
 
-        if (60 < $this->storage->getTotpAttemptCount($userId)) {
-            throw new TotpException('too many attempts at TOTP');
+        if (60 < $this->storage->getOtpAttemptCount($userId)) {
+            throw new OtpException('too many attempts at TOTP');
         }
 
         return $this->otpVerifier->verify(Base32::decodeUpper($totpSecret), $totpKey);

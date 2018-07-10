@@ -22,34 +22,61 @@
  * SOFTWARE.
  */
 
-namespace fkooman\Totp;
+namespace fkooman\Otp;
 
-use RuntimeException;
+use DateTime;
 
-class Util
+interface OtpStorageInterface
 {
     /**
-     * @param int $i
+     * @param string $userId
      *
-     * @return string
+     * @return bool
      */
-    public static function store64_be($i)
-    {
-        if (\PHP_VERSION_ID >= 50603) {
-            return \pack('J', $i);
-        }
+    public function hasOtpSecret($userId);
 
-        if (8 !== PHP_INT_SIZE) {
-            throw new RuntimeException('only 64 bit PHP installations are supported');
-        }
+    /**
+     * @param string $userId
+     *
+     * @return false|string
+     */
+    public function getOtpSecret($userId);
 
-        return \pack('C', ($i >> 56) & 0xff).
-            \pack('C', ($i >> 48) & 0xff).
-            \pack('C', ($i >> 40) & 0xff).
-            \pack('C', ($i >> 32) & 0xff).
-            \pack('C', ($i >> 24) & 0xff).
-            \pack('C', ($i >> 16) & 0xff).
-            \pack('C', ($i >> 8) & 0xff).
-            \pack('C', ($i & 0xff));
-    }
+    /**
+     * @param string $userId
+     * @param string $secret
+     *
+     * @return void
+     */
+    public function setOtpSecret($userId, $secret);
+
+    /**
+     * @param string $userId
+     *
+     * @return void
+     */
+    public function deleteOtpSecret($userId);
+
+    /**
+     * @param string $userId
+     *
+     * @return int
+     */
+    public function getOtpAttemptCount($userId);
+
+    /**
+     * @param string    $userId
+     * @param string    $totpKey
+     * @param \DateTime $dateTime
+     *
+     * @return bool
+     */
+    public function recordOtpKey($userId, $totpKey, DateTime $dateTime);
+
+    /**
+     * @param \DateTime $dateTime
+     *
+     * @return void
+     */
+    public function cleanOtpLog(DateTime $dateTime);
 }

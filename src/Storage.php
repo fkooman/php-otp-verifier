@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-namespace fkooman\Totp;
+namespace fkooman\Otp;
 
 use DateTime;
 use PDO;
 use PDOException;
 
-class Storage implements TotpStorageInterface
+class Storage implements OtpStorageInterface
 {
     /** @var \PDO */
     private $dbh;
@@ -48,7 +48,7 @@ class Storage implements TotpStorageInterface
      *
      * @return bool
      */
-    public function hasTotpSecret($userId)
+    public function hasOtpSecret($userId)
     {
         $stmt = $this->dbh->prepare('SELECT COUNT(*) FROM totp WHERE user_id = :user_id');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
@@ -62,7 +62,7 @@ class Storage implements TotpStorageInterface
      *
      * @return false|string
      */
-    public function getTotpSecret($userId)
+    public function getOtpSecret($userId)
     {
         $stmt = $this->dbh->prepare('SELECT secret FROM totp WHERE user_id = :user_id');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
@@ -77,7 +77,7 @@ class Storage implements TotpStorageInterface
      *
      * @return void
      */
-    public function setTotpSecret($userId, $secret)
+    public function setOtpSecret($userId, $secret)
     {
         $stmt = $this->dbh->prepare('INSERT INTO totp (user_id, secret) VALUES(:user_id, :secret)');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
@@ -90,7 +90,7 @@ class Storage implements TotpStorageInterface
      *
      * @return void
      */
-    public function deleteTotpSecret($userId)
+    public function deleteOtpSecret($userId)
     {
         $stmt = $this->dbh->prepare('DELETE FROM totp WHERE user_id = :user_id');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
@@ -102,7 +102,7 @@ class Storage implements TotpStorageInterface
      *
      * @return int
      */
-    public function getTotpAttemptCount($userId)
+    public function getOtpAttemptCount($userId)
     {
         $stmt = $this->dbh->prepare('SELECT COUNT(*) FROM totp_log WHERE user_id = :user_id');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
@@ -118,7 +118,7 @@ class Storage implements TotpStorageInterface
      *
      * @return bool
      */
-    public function recordTotpKey($userId, $totpKey, DateTime $dateTime)
+    public function recordOtpKey($userId, $totpKey, DateTime $dateTime)
     {
         // check if this user used the key before
         $stmt = $this->dbh->prepare('SELECT COUNT(*) FROM totp_log WHERE user_id = :user_id AND totp_key = :totp_key');
@@ -147,7 +147,7 @@ class Storage implements TotpStorageInterface
      *
      * @return void
      */
-    public function cleanTotpLog(DateTime $dateTime)
+    public function cleanOtpLog(DateTime $dateTime)
     {
         $stmt = $this->dbh->prepare('DELETE FROM totp_log WHERE date_time < :date_time');
         $stmt->bindValue(':date_time', $dateTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
