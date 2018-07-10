@@ -54,7 +54,7 @@ class Otp implements OtpVerifierInterface
      */
     public function generate($totpSecret, $offset = 0)
     {
-        $counter = \pack('J', $this->getCounterValue($offset));
+        $counter = Util::store64_be($this->getCounterValue($offset));
         $hmac_result = \hash_hmac(self::DEFAULT_ALGORITHM, $counter, $totpSecret, true);
         $offset = \ord($hmac_result[19]) & 0xf;
         $bin_code = (\ord($hmac_result[$offset]) & 0x7f) << 24
