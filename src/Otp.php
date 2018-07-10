@@ -28,6 +28,10 @@ use DateTime;
 
 class Otp implements OtpVerifierInterface
 {
+    const DEFAULT_ALGORITHM = 'sha1';
+    const DEFAULT_DIGITS = 6;
+    const DEFAULT_PERIOD = 30;
+
     /** @var \DateTime */
     private $dateTime;
 
@@ -51,15 +55,15 @@ class Otp implements OtpVerifierInterface
     public function generate($totpSecret, $offset = 0)
     {
         $counter = \pack('J', $this->getCounterValue($offset));
-        $hmac_result = \hash_hmac('sha1', $counter, $totpSecret, true);
+        $hmac_result = \hash_hmac(self::DEFAULT_ALGORITHM, $counter, $totpSecret, true);
         $offset = \ord($hmac_result[19]) & 0xf;
         $bin_code = (\ord($hmac_result[$offset]) & 0x7f) << 24
             | (\ord($hmac_result[$offset + 1]) & 0xff) << 16
             | (\ord($hmac_result[$offset + 2]) & 0xff) << 8
             | (\ord($hmac_result[$offset + 3]) & 0xff);
-        $totp = (string) ($bin_code % \pow(10, 6));
+        $totp = (string) ($bin_code % \pow(10, self::DEFAULT_DIGITS));
 
-        return \str_pad($totp, 6, '0', STR_PAD_LEFT);
+        return \str_pad($totp, self::DEFAULT_DIGITS, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -86,6 +90,6 @@ class Otp implements OtpVerifierInterface
      */
     private function getCounterValue($offset)
     {
-        return (int) \floor($this->dateTime->getTimestamp() / 30) + $offset;
+        return (int) \floor($this->dateTime->getTimestamp() / self::DEFAULT_PERIOD) + $offset;
     }
 }
