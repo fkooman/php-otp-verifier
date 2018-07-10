@@ -46,6 +46,20 @@ class Storage implements TotpStorageInterface
     /**
      * @param string $userId
      *
+     * @return bool
+     */
+    public function hasTotpSecret($userId)
+    {
+        $stmt = $this->dbh->prepare('SELECT COUNT(*) FROM totp WHERE user_id = :user_id');
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
+        $stmt->execute();
+
+        return 0 !== (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * @param string $userId
+     *
      * @return false|string
      */
     public function getTotpSecret($userId)
@@ -106,17 +120,26 @@ class Storage implements TotpStorageInterface
      */
     public function recordTotpKey($userId, $totpKey, DateTime $dateTime)
     {
-        try {
-            $stmt = $this->dbh->prepare('INSERT INTO totp_log (user_id, totp_key, date_time) VALUES (:user_id, :totp_key, :date_time)');
-            $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
-            $stmt->bindValue(':totp_key', $totpKey, PDO::PARAM_STR);
-            $stmt->bindValue(':date_time', $dateTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
-            $stmt->execute();
-
-            return true;
-        } catch (PDOException $e) {
+        // check if this user used the key before
+        $stmt = $this->dbh->prepare('SELECT COUNT(*) FROM totp_log WHERE user_id = :user_id AND totp_key = :totp_key');
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
+        $stmt->bindValue(':totp_key', $totpKey, PDO::PARAM_STR);
+        $stmt->execute();
+        if (0 !== (int) $stmt->fetchColumn()) {
             return false;
         }
+
+        // because the insert MUST succeed we avoid race condition where
+        // potentially two times the same key for the same user are accepted,
+        // we'd just get a PDOException because the UNIQUE(user_id, totp_key)
+        // constrained is violated
+        $stmt = $this->dbh->prepare('INSERT INTO totp_log (user_id, totp_key, date_time) VALUES (:user_id, :totp_key, :date_time)');
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
+        $stmt->bindValue(':totp_key', $totpKey, PDO::PARAM_STR);
+        $stmt->bindValue(':date_time', $dateTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmt->execute();
+
+        return true;
     }
 
     /**

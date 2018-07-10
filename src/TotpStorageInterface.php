@@ -31,6 +31,13 @@ interface TotpStorageInterface
     /**
      * @param string $userId
      *
+     * @return bool
+     */
+    public function hasTotpSecret($userId);
+
+    /**
+     * @param string $userId
+     *
      * @return false|string
      */
     public function getTotpSecret($userId);
