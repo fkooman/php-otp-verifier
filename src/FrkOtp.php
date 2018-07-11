@@ -39,13 +39,13 @@ class FrkOtp
      */
     public static function hotp($otpSecret, $otpCounter = 0, $otpHashAlgorithm = 'sha1', $otpDigits = 6)
     {
-        $hmac_result = \hash_hmac($otpHashAlgorithm, self::intToByteArray($otpCounter), $otpSecret, true);
-        $offset = \ord($hmac_result[\strlen($hmac_result) - 1]) & 0xf;
-        $bin_code = (\ord($hmac_result[$offset]) & 0x7f) << 24
-            | (\ord($hmac_result[$offset + 1]) & 0xff) << 16
-            | (\ord($hmac_result[$offset + 2]) & 0xff) << 8
-            | (\ord($hmac_result[$offset + 3]) & 0xff);
-        $otp = $bin_code % \pow(10, $otpDigits);
+        $hashResult = \hash_hmac($otpHashAlgorithm, self::intToByteArray($otpCounter), $otpSecret, true);
+        $hashOffset = \ord($hashResult[\strlen($hashResult) - 1]) & 0xf;
+        $binaryCode = (\ord($hashResult[$hashOffset]) & 0x7f) << 24
+            | (\ord($hashResult[$hashOffset + 1]) & 0xff) << 16
+            | (\ord($hashResult[$hashOffset + 2]) & 0xff) << 8
+            | (\ord($hashResult[$hashOffset + 3]) & 0xff);
+        $otp = $binaryCode % \pow(10, $otpDigits);
 
         return \str_pad((string) $otp, $otpDigits, '0', STR_PAD_LEFT);
     }
