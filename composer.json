@@ -19,7 +19,6 @@
     "license": "MIT",
     "name": "fkooman/otp-verifier",
     "require": {
-        "christian-riesen/otp": "^2",
         "ext-date": "*",
         "ext-hash": "*",
         "ext-pdo": "*",
@@ -27,7 +26,6 @@
         "paragonie/constant_time_encoding": "^1|^2",
         "paragonie/random_compat": ">=1",
         "php": ">= 5.4",
-        "spomky-labs/otphp": "^9.1",
         "symfony/polyfill-php56": "^1"
     },
     "require-dev": {
