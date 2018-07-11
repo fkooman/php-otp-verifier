@@ -46,20 +46,6 @@ class Storage implements OtpStorageInterface
     /**
      * @param string $userId
      *
-     * @return bool
-     */
-    public function hasOtpSecret($userId)
-    {
-        $stmt = $this->dbh->prepare('SELECT COUNT(*) FROM totp WHERE user_id = :user_id');
-        $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
-        $stmt->execute();
-
-        return 0 !== (int) $stmt->fetchColumn();
-    }
-
-    /**
-     * @param string $userId
-     *
      * @return false|string
      */
     public function getOtpSecret($userId)

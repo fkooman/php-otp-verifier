@@ -31,13 +31,6 @@ interface OtpStorageInterface
     /**
      * @param string $userId
      *
-     * @return bool
-     */
-    public function hasOtpSecret($userId);
-
-    /**
-     * @param string $userId
-     *
      * @return false|string
      */
     public function getOtpSecret($userId);

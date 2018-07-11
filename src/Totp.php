@@ -83,7 +83,7 @@ class Totp
      */
     public function register($userId)
     {
-        if ($this->storage->hasOtpSecret($userId)) {
+        if (false !== $this->storage->getOtpSecret($userId)) {
             throw new OtpException(\sprintf('user "%s" already has a TOTP secret', $userId));
         }
         $totpSecret = Base32::encodeUpper($this->random->get(self::SECRET_SIZE_BYTES));
