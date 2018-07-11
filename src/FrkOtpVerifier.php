@@ -51,8 +51,6 @@ class FrkOtpVerifier implements OtpVerifierInterface
      */
     public function verify($totpSecret, $totpKey)
     {
-        $frkOtp = new FrkOtp($this->dateTime);
-
-        return $frkOtp->verify(Base32::decodeUpper($totpSecret), $totpKey);
+        return FrkOtp::verifyTotp(Base32::decodeUpper($totpSecret), $totpKey, 30, 'sha1', 6, $this->dateTime);
     }
 }

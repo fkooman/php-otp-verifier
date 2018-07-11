@@ -29,54 +29,81 @@ use RuntimeException;
 
 class FrkOtp
 {
-    const DEFAULT_ALGORITHM = 'sha1';
-    const DEFAULT_DIGITS = 6;
-    const DEFAULT_PERIOD = 30;
-
-    /** @var \DateTime */
-    private $dateTime;
-
     /**
-     * @param null|\DateTime $dateTime
-     */
-    public function __construct(DateTime $dateTime = null)
-    {
-        if (null === $dateTime) {
-            $dateTime = new DateTime();
-        }
-        $this->dateTime = $dateTime;
-    }
-
-    /**
-     * @param string $totpSecret
-     * @param int    $offset
+     * @param string $otpSecret
+     * @param int    $otpCounter
+     * @param string $otpHashAlgorithm
+     * @param int    $otpDigits
      *
      * @return string
      */
-    public function generate($totpSecret, $offset = 0)
+    public static function hotp($otpSecret, $otpCounter = 0, $otpHashAlgorithm = 'sha1', $otpDigits = 6)
     {
-        $counter = self::store64_be($this->getCounterValue($offset));
-        $hmac_result = \hash_hmac(self::DEFAULT_ALGORITHM, $counter, $totpSecret, true);
-        $offset = \ord($hmac_result[19]) & 0xf;
+        $hmac_result = \hash_hmac($otpHashAlgorithm, self::intToByteArray($otpCounter), $otpSecret, true);
+        $offset = \ord($hmac_result[\strlen($hmac_result) - 1]) & 0xf;
         $bin_code = (\ord($hmac_result[$offset]) & 0x7f) << 24
             | (\ord($hmac_result[$offset + 1]) & 0xff) << 16
             | (\ord($hmac_result[$offset + 2]) & 0xff) << 8
             | (\ord($hmac_result[$offset + 3]) & 0xff);
-        $totp = (string) ($bin_code % \pow(10, self::DEFAULT_DIGITS));
+        $otp = $bin_code % \pow(10, $otpDigits);
 
-        return \str_pad($totp, self::DEFAULT_DIGITS, '0', STR_PAD_LEFT);
+        return \str_pad((string) $otp, $otpDigits, '0', STR_PAD_LEFT);
     }
 
     /**
-     * @param string $totpSecret
-     * @param string $totpKey
+     * @param string $otpSecret
+     * @param string $otpKey
+     * @param int    $otpCounter
+     * @param string $otpHashAlgorithm
+     * @param int    $otpDigits
      *
      * @return bool
      */
-    public function verify($totpSecret, $totpKey)
+    public static function verifyHotp($otpSecret, $otpKey, $otpCounter = 0, $otpHashAlgorithm = 'sha1', $otpDigits = 6)
     {
-        foreach ([0, -1, 1] as $offset) {
-            if (\hash_equals($this->generate($totpSecret, $offset), $totpKey)) {
+        return \hash_equals(self::hotp($otpSecret, $otpCounter, $otpHashAlgorithm, $otpDigits), $otpKey);
+    }
+
+    /**
+     * @param string         $otpSecret
+     * @param int            $totpPeriod
+     * @param string         $otpHashAlgorithm
+     * @param int            $otpDigits
+     * @param null|\DateTime $dateTime
+     *
+     * @return string
+     */
+    public static function totp($otpSecret, $totpPeriod = 30, $otpHashAlgorithm = 'sha1', $otpDigits = 6, DateTime $dateTime = null)
+    {
+        if (null === $dateTime) {
+            $dateTime = new DateTime();
+        }
+        $totpTimestamp = $dateTime->getTimestamp();
+
+        return self::hotp($otpSecret, (int) \floor($totpTimestamp / $totpPeriod), $otpHashAlgorithm, $otpDigits);
+    }
+
+    /**
+     * @param string         $otpSecret
+     * @param string         $otpKey
+     * @param int            $totpPeriod
+     * @param string         $otpHashAlgorithm
+     * @param int            $otpDigits
+     * @param null|\DateTime $dateTime
+     *
+     * @return bool
+     */
+    public static function verifyTotp($otpSecret, $otpKey, $totpPeriod = 30, $otpHashAlgorithm = 'sha1', $otpDigits = 6, DateTime $dateTime = null)
+    {
+        if (null === $dateTime) {
+            $dateTime = new DateTime();
+        }
+        $totpTimestamp = $dateTime->getTimestamp();
+
+        foreach ([0, -1, 1] as $totpWindow) {
+            $otpCounter = \floor(($totpTimestamp + $totpWindow * $totpPeriod) / $totpPeriod);
+
+            if (self::verifyHotp($otpSecret, $otpKey, (int) $otpCounter, $otpHashAlgorithm, $otpDigits)) {
                 return true;
             }
         }
@@ -85,37 +112,27 @@ class FrkOtp
     }
 
     /**
-     * @param int $offset
-     *
-     * @return int
-     */
-    private function getCounterValue($offset)
-    {
-        return (int) \floor($this->dateTime->getTimestamp() / self::DEFAULT_PERIOD) + $offset;
-    }
-
-    /**
-     * @param int $i
+     * @param int $int
      *
      * @return string
      */
-    private static function store64_be($i)
+    private static function intToByteArray($int)
     {
-        if (\PHP_VERSION_ID >= 50603) {
-            return \pack('J', $i);
-        }
-
         if (8 !== PHP_INT_SIZE) {
             throw new RuntimeException('only 64 bit PHP installations are supported');
         }
 
-        return \pack('C', ($i >> 56) & 0xff).
-            \pack('C', ($i >> 48) & 0xff).
-            \pack('C', ($i >> 40) & 0xff).
-            \pack('C', ($i >> 32) & 0xff).
-            \pack('C', ($i >> 24) & 0xff).
-            \pack('C', ($i >> 16) & 0xff).
-            \pack('C', ($i >> 8) & 0xff).
-            \pack('C', ($i & 0xff));
+        if (\PHP_VERSION_ID >= 50603) {
+            return \pack('J', $int);
+        }
+
+        return \pack('C', ($int >> 56) & 0xff).
+            \pack('C', ($int >> 48) & 0xff).
+            \pack('C', ($int >> 40) & 0xff).
+            \pack('C', ($int >> 32) & 0xff).
+            \pack('C', ($int >> 24) & 0xff).
+            \pack('C', ($int >> 16) & 0xff).
+            \pack('C', ($int >> 8) & 0xff).
+            \pack('C', ($int & 0xff));
     }
 }
