@@ -50,7 +50,7 @@ class Storage implements OtpStorageInterface
      */
     public function getOtpSecret($userId)
     {
-        $stmt = $this->dbh->prepare('SELECT secret FROM totp WHERE user_id = :user_id');
+        $stmt = $this->dbh->prepare('SELECT otp_secret FROM otp WHERE user_id = :user_id');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
         $stmt->execute();
 
@@ -59,15 +59,15 @@ class Storage implements OtpStorageInterface
 
     /**
      * @param string $userId
-     * @param string $secret
+     * @param string $otpSecret
      *
      * @return void
      */
-    public function setOtpSecret($userId, $secret)
+    public function setOtpSecret($userId, $otpSecret)
     {
-        $stmt = $this->dbh->prepare('INSERT INTO totp (user_id, secret) VALUES(:user_id, :secret)');
+        $stmt = $this->dbh->prepare('INSERT INTO otp (user_id, otp_secret) VALUES(:user_id, :otp_secret)');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
-        $stmt->bindValue(':secret', $secret, PDO::PARAM_STR);
+        $stmt->bindValue(':otp_secret', $otpSecret, PDO::PARAM_STR);
         $stmt->execute();
     }
 
@@ -78,7 +78,7 @@ class Storage implements OtpStorageInterface
      */
     public function deleteOtpSecret($userId)
     {
-        $stmt = $this->dbh->prepare('DELETE FROM totp WHERE user_id = :user_id');
+        $stmt = $this->dbh->prepare('DELETE FROM otp WHERE user_id = :user_id');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
         $stmt->execute();
     }
@@ -90,7 +90,7 @@ class Storage implements OtpStorageInterface
      */
     public function getOtpAttemptCount($userId)
     {
-        $stmt = $this->dbh->prepare('SELECT COUNT(*) FROM totp_log WHERE user_id = :user_id');
+        $stmt = $this->dbh->prepare('SELECT COUNT(*) FROM otp_log WHERE user_id = :user_id');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
         $stmt->execute();
 
@@ -99,17 +99,17 @@ class Storage implements OtpStorageInterface
 
     /**
      * @param string    $userId
-     * @param string    $totpKey
+     * @param string    $otpKey
      * @param \DateTime $dateTime
      *
      * @return bool
      */
-    public function recordOtpKey($userId, $totpKey, DateTime $dateTime)
+    public function recordOtpKey($userId, $otpKey, DateTime $dateTime)
     {
         // check if this user used the key before
-        $stmt = $this->dbh->prepare('SELECT COUNT(*) FROM totp_log WHERE user_id = :user_id AND totp_key = :totp_key');
+        $stmt = $this->dbh->prepare('SELECT COUNT(*) FROM otp_log WHERE user_id = :user_id AND otp_key = :otp_key');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
-        $stmt->bindValue(':totp_key', $totpKey, PDO::PARAM_STR);
+        $stmt->bindValue(':otp_key', $otpKey, PDO::PARAM_STR);
         $stmt->execute();
         if (0 !== (int) $stmt->fetchColumn()) {
             return false;
@@ -117,11 +117,11 @@ class Storage implements OtpStorageInterface
 
         // because the insert MUST succeed we avoid race condition where
         // potentially two times the same key for the same user are accepted,
-        // we'd just get a PDOException because the UNIQUE(user_id, totp_key)
+        // we'd just get a PDOException because the UNIQUE(user_id, otp_key)
         // constrained is violated
-        $stmt = $this->dbh->prepare('INSERT INTO totp_log (user_id, totp_key, date_time) VALUES (:user_id, :totp_key, :date_time)');
+        $stmt = $this->dbh->prepare('INSERT INTO otp_log (user_id, otp_key, date_time) VALUES (:user_id, :otp_key, :date_time)');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
-        $stmt->bindValue(':totp_key', $totpKey, PDO::PARAM_STR);
+        $stmt->bindValue(':otp_key', $otpKey, PDO::PARAM_STR);
         $stmt->bindValue(':date_time', $dateTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
         $stmt->execute();
 
@@ -135,7 +135,7 @@ class Storage implements OtpStorageInterface
      */
     public function cleanOtpLog(DateTime $dateTime)
     {
-        $stmt = $this->dbh->prepare('DELETE FROM totp_log WHERE date_time < :date_time');
+        $stmt = $this->dbh->prepare('DELETE FROM otp_log WHERE date_time < :date_time');
         $stmt->bindValue(':date_time', $dateTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
 
         $stmt->execute();
@@ -148,19 +148,19 @@ class Storage implements OtpStorageInterface
     {
         $this->dbh->exec(
 <<<'EOT'
-CREATE TABLE totp(
+CREATE TABLE otp(
   user_id VARCHAR(255) NOT NULL PRIMARY KEY UNIQUE,
-  secret VARCHAR(255) NOT NULL
+  otp_secret VARCHAR(255) NOT NULL
 )
 EOT
         );
         $this->dbh->exec(
 <<<'EOT'
-CREATE TABLE totp_log(
-  user_id VARCHAR(255) NOT NULL REFERENCES totp(user_id) ON DELETE CASCADE,
-  totp_key VARCHAR(255) NOT NULL,
+CREATE TABLE otp_log(
+  user_id VARCHAR(255) NOT NULL REFERENCES otp(user_id) ON DELETE CASCADE,
+  otp_key VARCHAR(255) NOT NULL,
   date_time DATETIME NOT NULL,
-  UNIQUE(user_id, totp_key)
+  UNIQUE(user_id, otp_key)
 )
 EOT
         );
