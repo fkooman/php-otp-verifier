@@ -32,7 +32,7 @@ class Totp
 {
     const SECRET_SIZE_BYTES = 20;    // 160 bits
 
-    /** @var Storage */
+    /** @var OtpStorageInterface */
     private $storage;
 
     /** @var OtpVerifierInterface */
@@ -45,10 +45,10 @@ class Totp
     private $random;
 
     /**
-     * @param Storage              $storage
+     * @param OtpStorageInterface  $storage
      * @param OtpVerifierInterface $otpVerifier
      */
-    public function __construct(Storage $storage, OtpVerifierInterface $otpVerifier)
+    public function __construct(OtpStorageInterface $storage, OtpVerifierInterface $otpVerifier)
     {
         $this->storage = $storage;
         $this->otpVerifier = $otpVerifier;
