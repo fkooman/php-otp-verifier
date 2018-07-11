@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+/** @psalm-suppress UnresolvableInclude */
 require_once \sprintf('%s/vendor/autoload.php', \dirname(__DIR__));
 
 use fkooman\Otp\Exception\OtpException;
