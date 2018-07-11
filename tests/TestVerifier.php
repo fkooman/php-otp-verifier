@@ -29,14 +29,14 @@ use fkooman\Otp\OtpVerifierInterface;
 class TestVerifier implements OtpVerifierInterface
 {
     /**
-     * @param string $totpSecret
-     * @param string $totpKey
+     * @param string $otpSecret
+     * @param string $otpKey
      *
      * @return bool
      */
-    public function verify($totpSecret, $totpKey)
+    public function verify($otpSecret, $otpKey)
     {
-        if ('352223' === $totpKey) {
+        if ('123456' === $otpKey || '654321' === $otpKey) {
             return true;
         }
 

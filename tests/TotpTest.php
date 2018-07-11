@@ -28,6 +28,7 @@ use DateTime;
 use fkooman\Otp\Exception\OtpException;
 use fkooman\Otp\Storage;
 use fkooman\Otp\Totp;
+use ParagonIE\ConstantTime\Base32;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
@@ -49,25 +50,24 @@ class TotpTest extends TestCase
             new TestVerifier()
         );
         $this->totp->setDateTime($dateTime);
-        $this->totp->setRandom(new TestRandom());
-        $this->totp->register('foo');
+        $this->totp->register('foo', Base32::encodeUpper('12345678901234567890'), '123456');
     }
 
     public function testVerifySuccess()
     {
-        $this->assertTrue($this->totp->verify('foo', '352223'));
+        $this->assertTrue($this->totp->verify('foo', '654321'));
     }
 
     public function testVerifyFail()
     {
-        $this->assertFalse($this->totp->verify('foo', '123456'));
+        $this->assertFalse($this->totp->verify('foo', '999999'));
     }
 
     public function testReplay()
     {
-        $this->assertTrue($this->totp->verify('foo', '352223'));
+        $this->assertTrue($this->totp->verify('foo', '654321'));
         try {
-            $this->totp->verify('foo', '352223');
+            $this->totp->verify('foo', '654321');
             $this->fail();
         } catch (OtpException $e) {
             $this->assertSame('replay of OTP code', $e->getMessage());
@@ -76,11 +76,11 @@ class TotpTest extends TestCase
 
     public function testTooManyAttempt()
     {
-        for ($i = 0; $i < 60; ++$i) {
+        for ($i = 0; $i < 59; ++$i) {
             $this->assertFalse(
                 $this->totp->verify(
                     'foo',
-                    \sprintf('%s', 123456 + $i)
+                    \sprintf('%s', 234567 + $i)
                 )
             );
         }

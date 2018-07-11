@@ -157,7 +157,7 @@ EOT
         $this->dbh->exec(
 <<<'EOT'
 CREATE TABLE otp_log(
-  user_id VARCHAR(255) NOT NULL REFERENCES otp(user_id) ON DELETE CASCADE,
+  user_id VARCHAR(255) NOT NULL,
   otp_key VARCHAR(255) NOT NULL,
   date_time DATETIME NOT NULL,
   UNIQUE(user_id, otp_key)

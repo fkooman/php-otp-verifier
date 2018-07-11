@@ -41,9 +41,6 @@ class Totp
     /** @var \DateTime */
     private $dateTime;
 
-    /** @var RandomInterface */
-    private $random;
-
     /**
      * @param OtpStorageInterface  $storage
      * @param OtpVerifierInterface $otpVerifier
@@ -53,7 +50,6 @@ class Totp
         $this->storage = $storage;
         $this->otpVerifier = $otpVerifier;
         $this->dateTime = new DateTime();
-        $this->random = new Random();
     }
 
     /**
@@ -67,29 +63,23 @@ class Totp
     }
 
     /**
-     * @param RandomInterface $random
+     * @param string $userId
+     * @param string $otpSecret
+     * @param string $otpKey
      *
      * @return void
      */
-    public function setRandom(RandomInterface $random)
-    {
-        $this->random = $random;
-    }
-
-    /**
-     * @param string $userId
-     *
-     * @return string
-     */
-    public function register($userId)
+    public function register($userId, $otpSecret, $otpKey)
     {
         if (false !== $this->storage->getOtpSecret($userId)) {
             throw new OtpException(\sprintf('user "%s" already has an OTP secret', $userId));
         }
-        $otpSecret = Base32::encodeUpper($this->random->get(self::SECRET_SIZE_BYTES));
-        $this->storage->setOtpSecret($userId, $otpSecret);
 
-        return $otpSecret;
+        if (false === $this->verifyWithSecret($userId, $otpSecret, $otpKey)) {
+            throw new OtpException('invalid OTP code');
+        }
+
+        $this->storage->setOtpSecret($userId, $otpSecret);
     }
 
     /**
@@ -104,6 +94,18 @@ class Totp
             throw new OtpException(\sprintf('user "%s" has no OTP secret', $userId));
         }
 
+        return $this->verifyWithSecret($userId, $otpSecret, $otpKey);
+    }
+
+    /**
+     * @param string $userId
+     * @param string $otpSecret
+     * @param string $otpKey
+     *
+     * @return bool
+     */
+    private function verifyWithSecret($userId, $otpSecret, $otpKey)
+    {
         // store the attempt even before validating it, to be able to count
         // the (failed) attempts and also replay attacks
         if (false === $this->storage->recordOtpKey($userId, $otpKey, $this->dateTime)) {
