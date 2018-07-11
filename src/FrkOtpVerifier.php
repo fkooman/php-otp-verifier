@@ -25,7 +25,6 @@
 namespace fkooman\Otp;
 
 use DateTime;
-use ParagonIE\ConstantTime\Base32;
 
 class FrkOtpVerifier implements OtpVerifierInterface
 {
@@ -44,13 +43,13 @@ class FrkOtpVerifier implements OtpVerifierInterface
     }
 
     /**
-     * @param string $totpSecret
-     * @param string $totpKey
+     * @param string $otpSecret
+     * @param string $otpKey
      *
      * @return bool
      */
-    public function verify($totpSecret, $totpKey)
+    public function verify($otpSecret, $otpKey)
     {
-        return FrkOtp::verifyTotp(Base32::decodeUpper($totpSecret), $totpKey, 30, 'sha1', 6, $this->dateTime);
+        return FrkOtp::verifyTotp($otpSecret, $otpKey, 30, 'sha1', 6, $this->dateTime);
     }
 }

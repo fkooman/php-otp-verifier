@@ -79,39 +79,41 @@ class Totp
     /**
      * @param string $userId
      *
-     * @return void
+     * @return string
      */
     public function register($userId)
     {
         if (false !== $this->storage->getOtpSecret($userId)) {
-            throw new OtpException(\sprintf('user "%s" already has a TOTP secret', $userId));
+            throw new OtpException(\sprintf('user "%s" already has an OTP secret', $userId));
         }
-        $totpSecret = Base32::encodeUpper($this->random->get(self::SECRET_SIZE_BYTES));
-        $this->storage->setOtpSecret($userId, $totpSecret);
+        $otpSecret = Base32::encodeUpper($this->random->get(self::SECRET_SIZE_BYTES));
+        $this->storage->setOtpSecret($userId, $otpSecret);
+
+        return $otpSecret;
     }
 
     /**
      * @param string $userId
-     * @param string $totpKey
+     * @param string $otpKey
      *
      * @return bool
      */
-    public function verify($userId, $totpKey)
+    public function verify($userId, $otpKey)
     {
-        if (false === $totpSecret = $this->storage->getOtpSecret($userId)) {
-            throw new OtpException('user has no TOTP secret');
+        if (false === $otpSecret = $this->storage->getOtpSecret($userId)) {
+            throw new OtpException(\sprintf('user "%s" has no OTP secret', $userId));
         }
 
         // store the attempt even before validating it, to be able to count
         // the (failed) attempts and also replay attacks
-        if (false === $this->storage->recordOtpKey($userId, $totpKey, $this->dateTime)) {
-            throw new OtpException('replay of TOTP code');
+        if (false === $this->storage->recordOtpKey($userId, $otpKey, $this->dateTime)) {
+            throw new OtpException('replay of OTP code');
         }
 
         if (60 < $this->storage->getOtpAttemptCount($userId)) {
-            throw new OtpException('too many attempts at TOTP');
+            throw new OtpException('too many attempts at OTP');
         }
 
-        return $this->otpVerifier->verify(Base32::decodeUpper($totpSecret), $totpKey);
+        return $this->otpVerifier->verify(Base32::decodeUpper($otpSecret), $otpKey);
     }
 }
