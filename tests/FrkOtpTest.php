@@ -112,4 +112,24 @@ class FrkOtpTest extends TestCase
         $this->assertSame($otpKey, FrkOtp::totp($otpSecret, $totpPeriod, $otpHashAlgorithm, $otpDigits, $dateTime));
         $this->assertTrue(FrkOtp::verifyTotp($otpSecret, $otpKey, $totpPeriod, $otpHashAlgorithm, $otpDigits, $dateTime));
     }
+
+    public function testTotpWindow()
+    {
+        $this->assertSame('628637', FrkOtp::totp('12345678901234567890', 30, 'sha1', 6, new DateTime('2018-01-01 08:00:00')));
+        $this->assertSame('130937', FrkOtp::totp('12345678901234567890', 30, 'sha1', 6, new DateTime('2018-01-01 07:59:30')));
+        $this->assertSame('875993', FrkOtp::totp('12345678901234567890', 30, 'sha1', 6, new DateTime('2018-01-01 08:00:30')));
+        $this->assertSame('114787', FrkOtp::totp('12345678901234567890', 30, 'sha1', 6, new DateTime('2018-01-01 08:01:00')));
+        $this->assertSame('564860', FrkOtp::totp('12345678901234567890', 30, 'sha1', 6, new DateTime('2018-01-01 07:59:00')));
+
+        // we only support window of size 1, i.e. only codes valid in the
+        // previous 30 seconds, and codes valid in the next 30 seconds from
+        // "now"
+        $this->assertTrue(FrkOtp::verifyTotp('12345678901234567890', '628637', 30, 'sha1', 6, new DateTime('2018-01-01 08:00:00')));
+        $this->assertTrue(FrkOtp::verifyTotp('12345678901234567890', '130937', 30, 'sha1', 6, new DateTime('2018-01-01 08:00:00')));
+        $this->assertTrue(FrkOtp::verifyTotp('12345678901234567890', '875993', 30, 'sha1', 6, new DateTime('2018-01-01 08:00:00')));
+
+        // codes outside this window are not supported
+        $this->assertFalse(FrkOtp::verifyTotp('12345678901234567890', '114787', 30, 'sha1', 6, new DateTime('2018-01-01 08:00:00')));
+        $this->assertFalse(FrkOtp::verifyTotp('12345678901234567890', '564860', 30, 'sha1', 6, new DateTime('2018-01-01 08:00:00')));
+    }
 }
