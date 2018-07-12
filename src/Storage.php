@@ -26,7 +26,6 @@ namespace fkooman\Otp;
 
 use DateTime;
 use PDO;
-use PDOException;
 
 class Storage implements OtpStorageInterface
 {
