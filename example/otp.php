@@ -39,13 +39,24 @@ $otpStorage = new Storage(new PDO('sqlite::memory:'));
 $otpStorage->init();
 $t = new Totp($otpStorage, new FrkOtpVerifier());
 
-// register an OTP secret for the user, the otpSecret should be sent to the
-// user's OTP app
-$otpSecret = $t->register($userId);
-echo \sprintf('User "%s" has OTP secret "%s"', $userId, $otpSecret).PHP_EOL;
+// generate an otpSecret
+$otpSecret = Base32::encodeUpper(\random_bytes(20));
 
-// generate a valid otpKey for this secret, NOTE: this is done by the user's
-// OTP application, we do it here just to create a complete example!
+// obtain a valid otpKey for this secret at this moment
+// NOTE: this is done by the user's OTP application, we do it here just to
+// create a complete example!
+$otpKey = FrkOtp::totp(Base32::decodeUpper($otpSecret));
+
+// register the OTP
+$t->register($userId, $otpSecret, $otpKey);
+
+// we have to wait for to otpKey to be rotated, we need to wait at most 30
+// seconds for the new window... We can't replay the OTP key used for
+// registration...
+echo \sprintf('We have to wait %d seconds for a new OTP key...', 30 - \time() % 30).PHP_EOL;
+while (0 !== \time() % 30) {
+    \sleep(1);
+}
 $otpKey = FrkOtp::totp(Base32::decodeUpper($otpSecret));
 
 // verify the otpKey
