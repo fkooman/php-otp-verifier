@@ -16,7 +16,7 @@ attacks and brute force attempts.
 
 We needed a library that works on PHP >= 5.4, with only 64 bit support. While
 it would have been possible to use `christian-riesen/otp` I decided to write
-my own minimal library with less than 100 NCLOC.
+my own minimal library with less than 100 NCLOC, `src/FrkOtp.php`.
 
 # Features
 
