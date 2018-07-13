@@ -40,11 +40,13 @@ $otpStorage->init();
 $t = new Totp($otpStorage, new FrkOtpVerifier());
 
 // generate an otpSecret
+/** @var string $otpSecret */
 $otpSecret = Base32::encodeUpper(\random_bytes(20));
 
 // obtain a valid otpKey for this secret at this moment
 // NOTE: this is done by the user's OTP application, we do it here just to
 // create a complete example!
+/** @var string $otpKey */
 $otpKey = FrkOtp::totp(Base32::decodeUpper($otpSecret));
 
 // register the OTP
@@ -57,6 +59,7 @@ echo \sprintf('We have to wait %d seconds for a new OTP key...', 30 - \time() % 
 while (0 !== \time() % 30) {
     \sleep(1);
 }
+/** @var string $otpKey */
 $otpKey = FrkOtp::totp(Base32::decodeUpper($otpSecret));
 
 // verify the otpKey
