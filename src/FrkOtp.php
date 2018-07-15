@@ -26,6 +26,7 @@ namespace fkooman\Otp;
 
 use DateTime;
 use ParagonIE\ConstantTime\Binary;
+use RangeException;
 use RuntimeException;
 
 class FrkOtp
@@ -40,9 +41,13 @@ class FrkOtp
      */
     public static function hotp($otpSecret, $otpCounter = 0, $otpHashAlgorithm = 'sha1', $otpDigits = 6)
     {
-        if (!\in_array($otpHashAlgorithm, \hash_algos(), true)) {
-            throw new RuntimeException(\sprintf('specified hash "%s" not supported', $otpHashAlgorithm));
+        if (0 > $otpCounter) {
+            throw new RangeException('counter must be >= 0');
         }
+        if (!\in_array($otpHashAlgorithm, \hash_algos(), true)) {
+            throw new RuntimeException(\sprintf('hash algorithm "%s" not supported', $otpHashAlgorithm));
+        }
+        // XXX validate digits
         $hashResult = \hash_hmac($otpHashAlgorithm, self::intToByteArray($otpCounter), $otpSecret, true);
         $hashOffset = \ord($hashResult[Binary::safeStrlen($hashResult) - 1]) & 0xf;
         $binaryCode = (\ord($hashResult[$hashOffset]) & 0x7f) << 24
@@ -79,6 +84,7 @@ class FrkOtp
      */
     public static function totp($otpSecret, $totpPeriod = 30, $otpHashAlgorithm = 'sha1', $otpDigits = 6, DateTime $dateTime = null)
     {
+        // XXX validate totpPeriod
         if (null === $dateTime) {
             $dateTime = new DateTime();
         }
@@ -99,6 +105,7 @@ class FrkOtp
      */
     public static function verifyTotp($otpSecret, $otpKey, $totpPeriod = 30, $otpHashAlgorithm = 'sha1', $otpDigits = 6, DateTime $dateTime = null)
     {
+        // XXX validate totpPeriod
         if (null === $dateTime) {
             $dateTime = new DateTime();
         }
