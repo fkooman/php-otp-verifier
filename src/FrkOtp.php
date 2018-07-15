@@ -25,6 +25,7 @@
 namespace fkooman\Otp;
 
 use DateTime;
+use ParagonIE\ConstantTime\Binary;
 use RuntimeException;
 
 class FrkOtp
@@ -40,7 +41,7 @@ class FrkOtp
     public static function hotp($otpSecret, $otpCounter = 0, $otpHashAlgorithm = 'sha1', $otpDigits = 6)
     {
         $hashResult = \hash_hmac($otpHashAlgorithm, self::intToByteArray($otpCounter), $otpSecret, true);
-        $hashOffset = \ord($hashResult[\strlen($hashResult) - 1]) & 0xf;
+        $hashOffset = \ord($hashResult[Binary::safeStrlen($hashResult) - 1]) & 0xf;
         $binaryCode = (\ord($hashResult[$hashOffset]) & 0x7f) << 24
             | (\ord($hashResult[$hashOffset + 1]) & 0xff) << 16
             | (\ord($hashResult[$hashOffset + 2]) & 0xff) << 8
