@@ -40,6 +40,9 @@ class FrkOtp
      */
     public static function hotp($otpSecret, $otpCounter = 0, $otpHashAlgorithm = 'sha1', $otpDigits = 6)
     {
+        if (!\in_array($otpHashAlgorithm, \hash_algos(), true)) {
+            throw new RuntimeException(\sprintf('specified hash "%s" not supported', $otpHashAlgorithm));
+        }
         $hashResult = \hash_hmac($otpHashAlgorithm, self::intToByteArray($otpCounter), $otpSecret, true);
         $hashOffset = \ord($hashResult[Binary::safeStrlen($hashResult) - 1]) & 0xf;
         $binaryCode = (\ord($hashResult[$hashOffset]) & 0x7f) << 24
