@@ -63,6 +63,14 @@ class Totp
     }
 
     /**
+     * @return string
+     */
+    public static function generateSecret()
+    {
+        return Base32::encodeUpper(\random_bytes(self::SECRET_SIZE_BYTES));
+    }
+
+    /**
      * @param string $userId
      * @param string $otpSecret
      * @param string $otpKey

@@ -39,9 +39,8 @@ $otpStorage = new Storage(new PDO('sqlite::memory:'));
 $otpStorage->init();
 $t = new Totp($otpStorage, new FrkOtpVerifier());
 
-// generate an otpSecret
 /** @var string $otpSecret */
-$otpSecret = Base32::encodeUpper(\random_bytes(20));
+$otpSecret = Totp::generateSecret();
 
 // obtain a valid otpKey for this secret at this moment
 // NOTE: this is done by the user's OTP application, we do it here just to
