@@ -47,7 +47,9 @@ class FrkOtp
         if (!\in_array($otpHashAlgorithm, \hash_algos(), true)) {
             throw new RuntimeException(\sprintf('hash algorithm "%s" not supported', $otpHashAlgorithm));
         }
-        // XXX validate digits
+        if (!\in_array($otpDigits, [6, 7, 8], true)) {
+            throw new RangeException('digits must be 6, 7 or 8');
+        }
         $hashResult = \hash_hmac($otpHashAlgorithm, self::intToByteArray($otpCounter), $otpSecret, true);
         $hashOffset = \ord($hashResult[Binary::safeStrlen($hashResult) - 1]) & 0xf;
         $binaryCode = (\ord($hashResult[$hashOffset]) & 0x7f) << 24
@@ -84,7 +86,7 @@ class FrkOtp
      */
     public static function totp($otpSecret, $totpPeriod = 30, $otpHashAlgorithm = 'sha1', $otpDigits = 6, DateTime $dateTime = null)
     {
-        // XXX validate totpPeriod
+        self::validatePeriod($totpPeriod);
         if (null === $dateTime) {
             $dateTime = new DateTime();
         }
@@ -105,7 +107,7 @@ class FrkOtp
      */
     public static function verifyTotp($otpSecret, $otpKey, $totpPeriod = 30, $otpHashAlgorithm = 'sha1', $otpDigits = 6, DateTime $dateTime = null)
     {
-        // XXX validate totpPeriod
+        self::validatePeriod($totpPeriod);
         if (null === $dateTime) {
             $dateTime = new DateTime();
         }
@@ -145,5 +147,17 @@ class FrkOtp
             \pack('C', ($int >> 16) & 0xff).
             \pack('C', ($int >> 8) & 0xff).
             \pack('C', ($int & 0xff));
+    }
+
+    /**
+     * @param int $totpPeriod
+     *
+     * @return void
+     */
+    private static function validatePeriod($totpPeriod)
+    {
+        if (0 >= $totpPeriod) {
+            throw new RangeException('period must be positive');
+        }
     }
 }
