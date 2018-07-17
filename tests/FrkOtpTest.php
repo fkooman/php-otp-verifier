@@ -128,7 +128,6 @@ class FrkOtpTest extends TestCase
         $this->assertTrue(FrkOtp::verifyTotp('875993', '12345678901234567890', 'sha1', 6, new DateTime('2018-01-01 08:00:00'), 30));
 
         // codes outside this window are not supported
-        // XXX have these generated directly!
         $this->assertFalse(FrkOtp::verifyTotp('114787', '12345678901234567890', 'sha1', 6, new DateTime('2018-01-01 08:00:00'), 30));
         $this->assertFalse(FrkOtp::verifyTotp('564860', '12345678901234567890', 'sha1', 6, new DateTime('2018-01-01 08:00:00'), 30));
     }

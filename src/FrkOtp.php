@@ -24,6 +24,7 @@
 
 namespace fkooman\Otp;
 
+use DateInterval;
 use DateTime;
 use ParagonIE\ConstantTime\Binary;
 use RangeException;
@@ -105,13 +106,13 @@ class FrkOtp implements OtpVerifierInterface
      */
     public static function verifyTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, DateTime $dateTime, $totpPeriod)
     {
-        self::validatePeriod($totpPeriod);
-        $totpTimestamp = $dateTime->getTimestamp();
-
-        foreach ([0, -1, 1] as $totpWindow) {
-            $otpCounter = (int) \floor(($totpTimestamp + $totpWindow * $totpPeriod) / $totpPeriod);
-            // XXX replace this with self::totp!
-            if (self::verifyHotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter)) {
+        $dateTimeList = [
+            $dateTime, // now
+            \date_sub(clone $dateTime, new DateInterval(\sprintf('PT%dS', $totpPeriod))), // - $totpPeriod seconds
+            \date_add(clone $dateTime, new DateInterval(\sprintf('PT%dS', $totpPeriod))), // + $totpPeriod seconds
+        ];
+        foreach ($dateTimeList as $dateTime) {
+            if (\hash_equals(self::totp($otpSecret, $otpHashAlgorithm, $otpDigits, $dateTime, $totpPeriod), $otpKey)) {
                 return true;
             }
         }
