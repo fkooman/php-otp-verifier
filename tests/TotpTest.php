@@ -91,4 +91,17 @@ class TotpTest extends TestCase
             $this->assertSame('too many attempts at OTP', $e->getMessage());
         }
     }
+
+    public function testGetEnrollmentUri()
+    {
+        $this->assertSame(
+            'otpauth://totp/foo%40example.org:My%20Service%20Inc.?secret=H7ISMUHIREODCOONJUOPKJJ4HJCS2PUD&algorithm=SHA1&digits=6&period=30&issuer=My%20Service%20Inc.',
+            $this->totp->getEnrollmentUri('foo@example.org', 'H7ISMUHIREODCOONJUOPKJJ4HJCS2PUD', 'My Service Inc.')
+        );
+    }
+
+    public function testGenerateSecret()
+    {
+        $this->assertSame(32, \strlen(Totp::generateSecret()));
+    }
 }

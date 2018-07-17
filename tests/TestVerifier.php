@@ -49,16 +49,16 @@ class TestVerifier implements OtpVerifierInterface
     }
 
     /**
-     * @param string $otpKey
-     * @param string $otpSecret
-     * @param string $otpHashAlgorithm
-     * @param int    $otpDigits
-     * @param int    $otpCounter
+     * @param string    $otpSecret
+     * @param string    $otpHashAlgorithm
+     * @param int       $otpDigits
+     * @param \DateTime $dateTime
+     * @param int       $totpPeriod
      *
-     * @return bool
+     * @return string
      */
-    public static function verifyHotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter)
+    public static function totp($otpSecret, $otpHashAlgorithm, $otpDigits, DateTime $dateTime, $totpPeriod)
     {
-        return false;
+        return '987654';
     }
 }

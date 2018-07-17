@@ -69,6 +69,36 @@ class Totp
     /**
      * @param string $userId
      * @param string $otpSecret
+     * @param string $otpIssuer
+     *
+     * @return string
+     */
+    public function getEnrollmentUri($userId, $otpSecret, $otpIssuer)
+    {
+        $otpLabel = \sprintf('%s:%s', \rawurlencode($userId), \rawurlencode($otpIssuer));
+
+        return \sprintf(
+            'otpauth://totp/%s?secret=%s&algorithm=%s&digits=%d&period=%d&issuer=%s',
+            $otpLabel,
+            $otpSecret,
+            \strtoupper($this->otpAlgorithm),
+            $this->otpDigits,
+            $this->totpPeriod,
+            \rawurlencode($otpIssuer)
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public static function generateSecret()
+    {
+        return Base32::encodeUpper(\random_bytes(20));
+    }
+
+    /**
+     * @param string $userId
+     * @param string $otpSecret
      * @param string $otpKey
      *
      * @return void
@@ -103,31 +133,15 @@ class Totp
 
     /**
      * @param string $otpAlgorithm
+     * @param int    $otpDigits
+     * @param int    $totpPeriod
      *
      * @return void
      */
-    public function setAlgorithm($otpAlgorithm)
+    public function setParameters($otpAlgorithm, $otpDigits, $totpPeriod)
     {
         $this->otpAlgorithm = $otpAlgorithm;
-    }
-
-    /**
-     * @param int $otpDigits
-     *
-     * @return void
-     */
-    public function setDigits($otpDigits)
-    {
         $this->otpDigits = $otpDigits;
-    }
-
-    /**
-     * @param int $totpPeriod
-     *
-     * @return void
-     */
-    public function setPeriod($totpPeriod)
-    {
         $this->totpPeriod = $totpPeriod;
     }
 
@@ -150,7 +164,7 @@ class Totp
             throw new OtpException('too many attempts at OTP');
         }
 
-        return $this->otpVerifier->verifyTotp(
+        return $this->otpVerifier::verifyTotp(
             $otpKey,
             Base32::decodeUpper($otpSecret),
             $this->otpAlgorithm,
