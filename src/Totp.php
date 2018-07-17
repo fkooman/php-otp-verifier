@@ -30,6 +30,8 @@ use ParagonIE\ConstantTime\Base32;
 
 class Totp
 {
+    const OTP_MAX_ATTEMPT_COUNT = 60;
+
     /** @var OtpStorageInterface */
     private $storage;
 
@@ -160,7 +162,7 @@ class Totp
             throw new OtpException('replay of OTP code');
         }
 
-        if (60 < $this->storage->getOtpAttemptCount($userId)) {
+        if (self::OTP_MAX_ATTEMPT_COUNT < $this->storage->getOtpAttemptCount($userId)) {
             throw new OtpException('too many attempts at OTP');
         }
 
