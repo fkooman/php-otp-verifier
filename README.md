@@ -71,6 +71,10 @@ if ($totp->verify($userId, $otpKey)) {
 
 See `example/otp.php` for a more complete example.
 
+**NOTE**: the `example/otp.php` script uses `FrkOtp` directly, but this MUST
+not be done in your code, it is only for demonstration purposes! Stick to the
+API as documented above!
+
 # Inspiration
 
 This library was inspired by other software, both in idea and sometimes code.

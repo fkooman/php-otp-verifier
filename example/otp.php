@@ -48,8 +48,8 @@ $t->register($userId, $otpSecret, $otpKey);
 // we MUST get a new OTP key to do validation, as the OTP key used for the
 // registration cannot be used again (replay protection). So, we generate the
 // OTP key for 30 seconds in the future...
-
 $dateTime->add(new DateInterval('PT30S'));
+
 /** @var string $otpKey */
 $otpKey = FrkOtp::totp($dateTime, Base32::decodeUpper($otpSecret));
 
