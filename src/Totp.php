@@ -39,6 +39,15 @@ class Totp
     /** @var \DateTime */
     private $dateTime;
 
+    /** @var string */
+    private $otpAlgorithm = 'sha1';
+
+    /** @var int */
+    private $otpDigits = 6;
+
+    /** @var int */
+    private $totpPeriod = 30;
+
     /**
      * @param OtpStorageInterface       $storage
      * @param null|OtpVerifierInterface $otpVerifier
@@ -93,6 +102,36 @@ class Totp
     }
 
     /**
+     * @param string $otpAlgorithm
+     *
+     * @return void
+     */
+    public function setAlgorithm($otpAlgorithm)
+    {
+        $this->otpAlgorithm = $otpAlgorithm;
+    }
+
+    /**
+     * @param int $otpDigits
+     *
+     * @return void
+     */
+    public function setDigits($otpDigits)
+    {
+        $this->otpDigits = $otpDigits;
+    }
+
+    /**
+     * @param int $totpPeriod
+     *
+     * @return void
+     */
+    public function setPeriod($totpPeriod)
+    {
+        $this->totpPeriod = $totpPeriod;
+    }
+
+    /**
      * @param string $userId
      * @param string $otpSecret
      * @param string $otpKey
@@ -111,6 +150,13 @@ class Totp
             throw new OtpException('too many attempts at OTP');
         }
 
-        return $this->otpVerifier->verifyTotp($otpKey, Base32::decodeUpper($otpSecret), 'sha1', 6, $this->dateTime, 30);
+        return $this->otpVerifier->verifyTotp(
+            $otpKey,
+            Base32::decodeUpper($otpSecret),
+            $this->otpAlgorithm,
+            $this->otpDigits,
+            $this->dateTime,
+            $this->totpPeriod
+        );
     }
 }

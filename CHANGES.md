@@ -1,7 +1,9 @@
 # Changelog
 
 ## 0.2.0 (...)
-- introduce `Totp::generateSecret()`
+- simplified API
+- remove obsolete code
+- less abstraction
 
 ## 0.1.1 (2018-07-16)
 - code cleanups
