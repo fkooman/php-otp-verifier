@@ -50,6 +50,6 @@ class FrkOtpVerifier implements OtpVerifierInterface
      */
     public function verify($otpSecret, $otpKey)
     {
-        return FrkOtp::verifyTotp($otpSecret, $otpKey, 30, 'sha1', 6, $this->dateTime);
+        return FrkOtp::verifyTotp($this->dateTime, $otpSecret, $otpKey, 30, 'sha1', 6);
     }
 }

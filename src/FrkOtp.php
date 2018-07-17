@@ -76,41 +76,35 @@ class FrkOtp
     }
 
     /**
-     * @param string         $otpSecret
-     * @param int            $totpPeriod
-     * @param string         $otpHashAlgorithm
-     * @param int            $otpDigits
-     * @param null|\DateTime $dateTime
+     * @param \DateTime $dateTime
+     * @param string    $otpSecret
+     * @param int       $totpPeriod
+     * @param string    $otpHashAlgorithm
+     * @param int       $otpDigits
      *
      * @return string
      */
-    public static function totp($otpSecret, $totpPeriod = 30, $otpHashAlgorithm = 'sha1', $otpDigits = 6, DateTime $dateTime = null)
+    public static function totp(DateTime $dateTime, $otpSecret, $totpPeriod = 30, $otpHashAlgorithm = 'sha1', $otpDigits = 6)
     {
         self::validatePeriod($totpPeriod);
-        if (null === $dateTime) {
-            $dateTime = new DateTime();
-        }
         $totpTimestamp = $dateTime->getTimestamp();
 
         return self::hotp($otpSecret, (int) \floor($totpTimestamp / $totpPeriod), $otpHashAlgorithm, $otpDigits);
     }
 
     /**
-     * @param string         $otpSecret
-     * @param string         $otpKey
-     * @param int            $totpPeriod
-     * @param string         $otpHashAlgorithm
-     * @param int            $otpDigits
-     * @param null|\DateTime $dateTime
+     * @param \DateTime $dateTime
+     * @param string    $otpSecret
+     * @param string    $otpKey
+     * @param int       $totpPeriod
+     * @param string    $otpHashAlgorithm
+     * @param int       $otpDigits
      *
      * @return bool
      */
-    public static function verifyTotp($otpSecret, $otpKey, $totpPeriod = 30, $otpHashAlgorithm = 'sha1', $otpDigits = 6, DateTime $dateTime = null)
+    public static function verifyTotp(DateTime $dateTime, $otpSecret, $otpKey, $totpPeriod = 30, $otpHashAlgorithm = 'sha1', $otpDigits = 6)
     {
         self::validatePeriod($totpPeriod);
-        if (null === $dateTime) {
-            $dateTime = new DateTime();
-        }
         $totpTimestamp = $dateTime->getTimestamp();
 
         foreach ([0, -1, 1] as $totpWindow) {

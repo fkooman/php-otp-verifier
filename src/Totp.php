@@ -31,6 +31,9 @@ use ParagonIE\ConstantTime\Base32;
 class Totp
 {
     const SECRET_SIZE_BYTES = 20;    // 160 bits
+    const DEFAULT_HASH_ALGORITHM = 'sha1';
+    const DEFAULT_TOTP_PERIOD = 30;
+    const DEFAULT_DIGITS = 6;
 
     /** @var OtpStorageInterface */
     private $storage;

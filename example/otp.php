@@ -46,7 +46,7 @@ $otpSecret = Totp::generateSecret();
 // NOTE: this is done by the user's OTP application, we do it here just to
 // create a complete example!
 /** @var string $otpKey */
-$otpKey = FrkOtp::totp(Base32::decodeUpper($otpSecret));
+$otpKey = FrkOtp::totp(new DateTime(), Base32::decodeUpper($otpSecret));
 
 // register the OTP
 $t->register($userId, $otpSecret, $otpKey);
@@ -59,7 +59,7 @@ while (0 !== \time() % 30) {
     \sleep(1);
 }
 /** @var string $otpKey */
-$otpKey = FrkOtp::totp(Base32::decodeUpper($otpSecret));
+$otpKey = FrkOtp::totp(new DateTime(), Base32::decodeUpper($otpSecret));
 
 // verify the otpKey
 if ($t->verify($userId, $otpKey)) {
