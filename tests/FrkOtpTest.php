@@ -38,16 +38,16 @@ class FrkOtpTest extends TestCase
 
         return [
             // RFC 4226
-            [$secretList['rfc4226#sha1'], 0, 'sha1', 6, '755224'],
-            [$secretList['rfc4226#sha1'], 1, 'sha1', 6, '287082'],
-            [$secretList['rfc4226#sha1'], 2, 'sha1', 6, '359152'],
-            [$secretList['rfc4226#sha1'], 3, 'sha1', 6, '969429'],
-            [$secretList['rfc4226#sha1'], 4, 'sha1', 6, '338314'],
-            [$secretList['rfc4226#sha1'], 5, 'sha1', 6, '254676'],
-            [$secretList['rfc4226#sha1'], 6, 'sha1', 6, '287922'],
-            [$secretList['rfc4226#sha1'], 7, 'sha1', 6, '162583'],
-            [$secretList['rfc4226#sha1'], 8, 'sha1', 6, '399871'],
-            [$secretList['rfc4226#sha1'], 9, 'sha1', 6, '520489'],
+            ['755224', $secretList['rfc4226#sha1'], 'sha1', 6, 0],
+            ['287082', $secretList['rfc4226#sha1'], 'sha1', 6, 1],
+            ['359152', $secretList['rfc4226#sha1'], 'sha1', 6, 2],
+            ['969429', $secretList['rfc4226#sha1'], 'sha1', 6, 3],
+            ['338314', $secretList['rfc4226#sha1'], 'sha1', 6, 4],
+            ['254676', $secretList['rfc4226#sha1'], 'sha1', 6, 5],
+            ['287922', $secretList['rfc4226#sha1'], 'sha1', 6, 6],
+            ['162583', $secretList['rfc4226#sha1'], 'sha1', 6, 7],
+            ['399871', $secretList['rfc4226#sha1'], 'sha1', 6, 8],
+            ['520489', $secretList['rfc4226#sha1'], 'sha1', 6, 9],
         ];
     }
 
@@ -61,75 +61,75 @@ class FrkOtpTest extends TestCase
 
         return [
             // RFC 6238
-            [new DateTime('1970-01-01 00:00:59'), $secretList['rfc6238#sha1'],   30, 'sha1',   8, '94287082'],
-            [new DateTime('1970-01-01 00:00:59'), $secretList['rfc6238#sha256'], 30, 'sha256', 8, '46119246'],
-            [new DateTime('1970-01-01 00:00:59'), $secretList['rfc6238#sha512'], 30, 'sha512', 8, '90693936'],
-            [new DateTime('2005-03-18 01:58:29'), $secretList['rfc6238#sha1'],   30, 'sha1',   8, '07081804'],
-            [new DateTime('2005-03-18 01:58:29'), $secretList['rfc6238#sha256'], 30, 'sha256', 8, '68084774'],
-            [new DateTime('2005-03-18 01:58:29'), $secretList['rfc6238#sha512'], 30, 'sha512', 8, '25091201'],
-            [new DateTime('2005-03-18 01:58:31'), $secretList['rfc6238#sha1'],   30, 'sha1',   8, '14050471'],
-            [new DateTime('2005-03-18 01:58:31'), $secretList['rfc6238#sha256'], 30, 'sha256', 8, '67062674'],
-            [new DateTime('2005-03-18 01:58:31'), $secretList['rfc6238#sha512'], 30, 'sha512', 8, '99943326'],
-            [new DateTime('2009-02-13 23:31:30'), $secretList['rfc6238#sha1'],   30, 'sha1',   8, '89005924'],
-            [new DateTime('2009-02-13 23:31:30'), $secretList['rfc6238#sha256'], 30, 'sha256', 8, '91819424'],
-            [new DateTime('2009-02-13 23:31:30'), $secretList['rfc6238#sha512'], 30, 'sha512', 8, '93441116'],
-            [new DateTime('2033-05-18 03:33:20'), $secretList['rfc6238#sha1'],   30, 'sha1',   8, '69279037'],
-            [new DateTime('2033-05-18 03:33:20'), $secretList['rfc6238#sha256'], 30, 'sha256', 8, '90698825'],
-            [new DateTime('2033-05-18 03:33:20'), $secretList['rfc6238#sha512'], 30, 'sha512', 8, '38618901'],
-            [new DateTime('2603-10-11 11:33:20'), $secretList['rfc6238#sha1'],   30, 'sha1',   8, '65353130'],
-            [new DateTime('2603-10-11 11:33:20'), $secretList['rfc6238#sha256'], 30, 'sha256', 8, '77737706'],
-            [new DateTime('2603-10-11 11:33:20'), $secretList['rfc6238#sha512'], 30, 'sha512', 8, '47863826'],
+            ['94287082', $secretList['rfc6238#sha1'],   'sha1',   8, new DateTime('1970-01-01 00:00:59'), 30],
+            ['46119246', $secretList['rfc6238#sha256'], 'sha256', 8, new DateTime('1970-01-01 00:00:59'), 30],
+            ['90693936', $secretList['rfc6238#sha512'], 'sha512', 8, new DateTime('1970-01-01 00:00:59'), 30],
+            ['07081804', $secretList['rfc6238#sha1'],   'sha1',   8, new DateTime('2005-03-18 01:58:29'), 30],
+            ['68084774', $secretList['rfc6238#sha256'], 'sha256', 8, new DateTime('2005-03-18 01:58:29'), 30],
+            ['25091201', $secretList['rfc6238#sha512'], 'sha512', 8, new DateTime('2005-03-18 01:58:29'), 30],
+            ['14050471', $secretList['rfc6238#sha1'],   'sha1',   8, new DateTime('2005-03-18 01:58:31'), 30],
+            ['67062674', $secretList['rfc6238#sha256'], 'sha256', 8, new DateTime('2005-03-18 01:58:31'), 30],
+            ['99943326', $secretList['rfc6238#sha512'], 'sha512', 8, new DateTime('2005-03-18 01:58:31'), 30],
+            ['89005924', $secretList['rfc6238#sha1'],   'sha1',   8, new DateTime('2009-02-13 23:31:30'), 30],
+            ['91819424', $secretList['rfc6238#sha256'], 'sha256', 8, new DateTime('2009-02-13 23:31:30'), 30],
+            ['93441116', $secretList['rfc6238#sha512'], 'sha512', 8, new DateTime('2009-02-13 23:31:30'), 30],
+            ['69279037', $secretList['rfc6238#sha1'],   'sha1',   8, new DateTime('2033-05-18 03:33:20'), 30],
+            ['90698825', $secretList['rfc6238#sha256'], 'sha256', 8, new DateTime('2033-05-18 03:33:20'), 30],
+            ['38618901', $secretList['rfc6238#sha512'], 'sha512', 8, new DateTime('2033-05-18 03:33:20'), 30],
+            ['65353130', $secretList['rfc6238#sha1'],   'sha1',   8, new DateTime('2603-10-11 11:33:20'), 30],
+            ['77737706', $secretList['rfc6238#sha256'], 'sha256', 8, new DateTime('2603-10-11 11:33:20'), 30],
+            ['47863826', $secretList['rfc6238#sha512'], 'sha512', 8, new DateTime('2603-10-11 11:33:20'), 30],
         ];
     }
 
     /**
      * @dataProvider hotpTestVectors
      *
-     * @param string $otpSecret
-     * @param int    $otpCounter
-     * @param string $otpHashAlgorithm
-     * @param int    $otpDigits
-     * @param string $otpKey
+     * @param mixed $otpKey
+     * @param mixed $otpSecret
+     * @param mixed $otpHashAlgorithm
+     * @param mixed $otpDigits
+     * @param mixed $otpCounter
      */
-    public function testHotp($otpSecret, $otpCounter, $otpHashAlgorithm, $otpDigits, $otpKey)
+    public function testHotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter)
     {
-        $this->assertSame($otpKey, FrkOtp::hotp($otpSecret, $otpCounter, $otpHashAlgorithm, $otpDigits));
-        $this->assertTrue(FrkOtp::verifyHotp($otpSecret, $otpKey, $otpCounter, $otpHashAlgorithm, $otpDigits));
+        $this->assertSame($otpKey, FrkOtp::hotp($otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter));
+        $this->assertTrue(FrkOtp::verifyHotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter));
     }
 
     /**
      * @dataProvider totpTestVectors
      *
-     * @param string    $otpSecret
-     * @param int       $totpPeriod
-     * @param string    $otpHashAlgorithm
-     * @param int       $otpDigits
-     * @param \DateTime $dateTime
-     * @param string    $otpKey
+     * @param mixed $otpKey
+     * @param mixed $otpSecret
+     * @param mixed $otpHashAlgorithm
+     * @param mixed $otpDigits
+     * @param mixed $totpPeriod
      */
-    public function testTotp(DateTime $dateTime, $otpSecret, $totpPeriod, $otpHashAlgorithm, $otpDigits, $otpKey)
+    public function testTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, DateTime $dateTime, $totpPeriod)
     {
-        $this->assertSame($otpKey, FrkOtp::totp($dateTime, $otpSecret, $totpPeriod, $otpHashAlgorithm, $otpDigits));
-        $this->assertTrue(FrkOtp::verifyTotp($dateTime, $otpSecret, $otpKey, $totpPeriod, $otpHashAlgorithm, $otpDigits));
+        $this->assertSame($otpKey, FrkOtp::totp($otpSecret, $otpHashAlgorithm, $otpDigits, $dateTime, $totpPeriod));
+        $this->assertTrue(FrkOtp::verifyTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $dateTime, $totpPeriod));
     }
 
     public function testTotpWindow()
     {
-        $this->assertSame('628637', FrkOtp::totp(new DateTime('2018-01-01 08:00:00'), '12345678901234567890', 30, 'sha1', 6));
-        $this->assertSame('130937', FrkOtp::totp(new DateTime('2018-01-01 07:59:30'), '12345678901234567890', 30, 'sha1', 6));
-        $this->assertSame('875993', FrkOtp::totp(new DateTime('2018-01-01 08:00:30'), '12345678901234567890', 30, 'sha1', 6));
-        $this->assertSame('114787', FrkOtp::totp(new DateTime('2018-01-01 08:01:00'), '12345678901234567890', 30, 'sha1', 6));
-        $this->assertSame('564860', FrkOtp::totp(new DateTime('2018-01-01 07:59:00'), '12345678901234567890', 30, 'sha1', 6));
+        $this->assertSame('628637', FrkOtp::totp('12345678901234567890', 'sha1', 6, new DateTime('2018-01-01 08:00:00'), 30));
+        $this->assertSame('130937', FrkOtp::totp('12345678901234567890', 'sha1', 6, new DateTime('2018-01-01 07:59:30'), 30));
+        $this->assertSame('875993', FrkOtp::totp('12345678901234567890', 'sha1', 6, new DateTime('2018-01-01 08:00:30'), 30));
+        $this->assertSame('114787', FrkOtp::totp('12345678901234567890', 'sha1', 6, new DateTime('2018-01-01 08:01:00'), 30));
+        $this->assertSame('564860', FrkOtp::totp('12345678901234567890', 'sha1', 6, new DateTime('2018-01-01 07:59:00'), 30));
 
         // we only support window of size 1, i.e. only codes valid in the
         // previous 30 seconds, and codes valid in the next 30 seconds from
         // "now"
-        $this->assertTrue(FrkOtp::verifyTotp(new DateTime('2018-01-01 08:00:00'), '12345678901234567890', '628637', 30, 'sha1', 6));
-        $this->assertTrue(FrkOtp::verifyTotp(new DateTime('2018-01-01 08:00:00'), '12345678901234567890', '130937', 30, 'sha1', 6));
-        $this->assertTrue(FrkOtp::verifyTotp(new DateTime('2018-01-01 08:00:00'), '12345678901234567890', '875993', 30, 'sha1', 6));
+        $this->assertTrue(FrkOtp::verifyTotp('628637', '12345678901234567890', 'sha1', 6, new DateTime('2018-01-01 08:00:00'), 30));
+        $this->assertTrue(FrkOtp::verifyTotp('130937', '12345678901234567890', 'sha1', 6, new DateTime('2018-01-01 08:00:00'), 30));
+        $this->assertTrue(FrkOtp::verifyTotp('875993', '12345678901234567890', 'sha1', 6, new DateTime('2018-01-01 08:00:00'), 30));
 
         // codes outside this window are not supported
-        $this->assertFalse(FrkOtp::verifyTotp(new DateTime('2018-01-01 08:00:00'), '12345678901234567890', '114787', 30, 'sha1', 6));
-        $this->assertFalse(FrkOtp::verifyTotp(new DateTime('2018-01-01 08:00:00'), '12345678901234567890', '564860', 30, 'sha1', 6));
+        // XXX have these generated directly!
+        $this->assertFalse(FrkOtp::verifyTotp('114787', '12345678901234567890', 'sha1', 6, new DateTime('2018-01-01 08:00:00'), 30));
+        $this->assertFalse(FrkOtp::verifyTotp('564860', '12345678901234567890', 'sha1', 6, new DateTime('2018-01-01 08:00:00'), 30));
     }
 }

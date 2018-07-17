@@ -29,17 +29,17 @@ use ParagonIE\ConstantTime\Binary;
 use RangeException;
 use RuntimeException;
 
-class FrkOtp
+class FrkOtp implements OtpVerifierInterface
 {
     /**
      * @param string $otpSecret
-     * @param int    $otpCounter
      * @param string $otpHashAlgorithm
      * @param int    $otpDigits
+     * @param int    $otpCounter
      *
      * @return string
      */
-    public static function hotp($otpSecret, $otpCounter = 0, $otpHashAlgorithm = 'sha1', $otpDigits = 6)
+    public static function hotp($otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter)
     {
         if (0 > $otpCounter) {
             throw new RangeException('counter must be >= 0');
@@ -62,55 +62,56 @@ class FrkOtp
     }
 
     /**
-     * @param string $otpSecret
      * @param string $otpKey
-     * @param int    $otpCounter
+     * @param string $otpSecret
      * @param string $otpHashAlgorithm
      * @param int    $otpDigits
+     * @param int    $otpCounter
      *
      * @return bool
      */
-    public static function verifyHotp($otpSecret, $otpKey, $otpCounter = 0, $otpHashAlgorithm = 'sha1', $otpDigits = 6)
+    public static function verifyHotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter)
     {
-        return \hash_equals(self::hotp($otpSecret, $otpCounter, $otpHashAlgorithm, $otpDigits), $otpKey);
+        return \hash_equals(self::hotp($otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter), $otpKey);
     }
 
     /**
-     * @param \DateTime $dateTime
      * @param string    $otpSecret
-     * @param int       $totpPeriod
      * @param string    $otpHashAlgorithm
      * @param int       $otpDigits
+     * @param \DateTime $dateTime
+     * @param int       $totpPeriod
      *
      * @return string
      */
-    public static function totp(DateTime $dateTime, $otpSecret, $totpPeriod = 30, $otpHashAlgorithm = 'sha1', $otpDigits = 6)
+    public static function totp($otpSecret, $otpHashAlgorithm, $otpDigits, DateTime $dateTime, $totpPeriod)
     {
         self::validatePeriod($totpPeriod);
         $totpTimestamp = $dateTime->getTimestamp();
+        $otpCounter = (int) \floor($totpTimestamp / $totpPeriod);
 
-        return self::hotp($otpSecret, (int) \floor($totpTimestamp / $totpPeriod), $otpHashAlgorithm, $otpDigits);
+        return self::hotp($otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter);
     }
 
     /**
-     * @param \DateTime $dateTime
-     * @param string    $otpSecret
      * @param string    $otpKey
-     * @param int       $totpPeriod
+     * @param string    $otpSecret
      * @param string    $otpHashAlgorithm
      * @param int       $otpDigits
+     * @param \DateTime $dateTime
+     * @param int       $totpPeriod
      *
      * @return bool
      */
-    public static function verifyTotp(DateTime $dateTime, $otpSecret, $otpKey, $totpPeriod = 30, $otpHashAlgorithm = 'sha1', $otpDigits = 6)
+    public static function verifyTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, DateTime $dateTime, $totpPeriod)
     {
         self::validatePeriod($totpPeriod);
         $totpTimestamp = $dateTime->getTimestamp();
 
         foreach ([0, -1, 1] as $totpWindow) {
-            $otpCounter = \floor(($totpTimestamp + $totpWindow * $totpPeriod) / $totpPeriod);
-
-            if (self::verifyHotp($otpSecret, $otpKey, (int) $otpCounter, $otpHashAlgorithm, $otpDigits)) {
+            $otpCounter = (int) \floor(($totpTimestamp + $totpWindow * $totpPeriod) / $totpPeriod);
+            // XXX replace this with self::totp!
+            if (self::verifyHotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter)) {
                 return true;
             }
         }

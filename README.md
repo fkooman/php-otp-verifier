@@ -32,14 +32,14 @@ my own minimal library with less than 100 NCLOC, `src/FrkOtp.php`.
 
 
 ```php
-$storage = new Storage('sqlite:/path/to/otp.sqlite');
+    $storage = new Storage('sqlite:/path/to/otp.sqlite');
 ```
 
 You can call `init()` on the `Storage` object to initialize the database, do
 this only _once_ during application installation:
 
 ```php
-$storage->init();
+    $storage->init();
 ```
 
 ## Registration
@@ -50,23 +50,23 @@ example generate an OTP secret, generate a QR code and allow the user to
 import that in their OTP application.
 
 ```php
-$totp = new Totp($storage);
-$userId = 'fkooman';
-$otpSecret = 'H7ISMUHIREODCOONJUOPKJJ4HJCS2PUD';
-$otpKey = '371427';
-$totp->register($userId, $otpSecret, $otpKey);
+    $totp = new Totp($storage);
+    $userId = 'fkooman';
+    $otpSecret = 'H7ISMUHIREODCOONJUOPKJJ4HJCS2PUD';
+    $otpKey = '371427';
+    $totp->register($userId, $otpSecret, $otpKey);
 ```
 
 ## Verification
 
 ```php
-$userId = 'fkooman';
-$otpKey = '621029';
-if ($totp->verify($userId, $otpKey)) {
-    echo 'VALID!' . PHP_EOL;
-} else {
-    echo 'NOT VALID!' . PHP_EOL;
-}
+    $userId = 'fkooman';
+    $otpKey = '621029';
+    if ($totp->verify($userId, $otpKey)) {
+        echo 'VALID!' . PHP_EOL;
+    } else {
+        echo 'NOT VALID!' . PHP_EOL;
+    }
 ```
 
 See `example/otp.php` for a more complete example.

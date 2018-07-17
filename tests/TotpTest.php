@@ -47,8 +47,8 @@ class TotpTest extends TestCase
         $dateTime = new DateTime('2018-01-01 08:00:00');
         $this->totp = new Totp(
             $storage,
-            $dateTime,
-            new TestVerifier()
+            new TestVerifier(),
+            $dateTime
         );
         $this->totp->register('foo', Base32::encodeUpper('12345678901234567890'), '123456');
     }

@@ -41,20 +41,20 @@ class Totp
 
     /**
      * @param OtpStorageInterface       $storage
-     * @param null|\DateTime            $dateTime
      * @param null|OtpVerifierInterface $otpVerifier
+     * @param null|\DateTime            $dateTime
      */
-    public function __construct(OtpStorageInterface $storage, DateTime $dateTime = null, OtpVerifierInterface $otpVerifier = null)
+    public function __construct(OtpStorageInterface $storage, OtpVerifierInterface $otpVerifier = null, DateTime $dateTime = null)
     {
         $this->storage = $storage;
+        if (null === $otpVerifier) {
+            $otpVerifier = new FrkOtp();
+        }
+        $this->otpVerifier = $otpVerifier;
         if (null === $dateTime) {
             $dateTime = new DateTime();
         }
         $this->dateTime = $dateTime;
-        if (null === $otpVerifier) {
-            $otpVerifier = new FrkOtpVerifier($dateTime);
-        }
-        $this->otpVerifier = $otpVerifier;
     }
 
     /**
@@ -111,6 +111,6 @@ class Totp
             throw new OtpException('too many attempts at OTP');
         }
 
-        return $this->otpVerifier->verify(Base32::decodeUpper($otpSecret), $otpKey);
+        return $this->otpVerifier->verifyTotp($otpKey, Base32::decodeUpper($otpSecret), 'sha1', 6, $this->dateTime, 30);
     }
 }

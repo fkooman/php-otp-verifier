@@ -24,22 +24,41 @@
 
 namespace fkooman\Otp\Tests;
 
+use DateTime;
 use fkooman\Otp\OtpVerifierInterface;
 
 class TestVerifier implements OtpVerifierInterface
 {
     /**
-     * @param string $otpSecret
-     * @param string $otpKey
+     * @param string    $otpKey
+     * @param string    $otpSecret
+     * @param string    $otpHashAlgorithm
+     * @param int       $otpDigits
+     * @param \DateTime $dateTime
+     * @param int       $totpPeriod
      *
      * @return bool
      */
-    public function verify($otpSecret, $otpKey)
+    public static function verifyTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, DateTime $dateTime, $totpPeriod)
     {
         if ('123456' === $otpKey || '654321' === $otpKey) {
             return true;
         }
 
+        return false;
+    }
+
+    /**
+     * @param string $otpKey
+     * @param string $otpSecret
+     * @param string $otpHashAlgorithm
+     * @param int    $otpDigits
+     * @param int    $otpCounter
+     *
+     * @return bool
+     */
+    public static function verifyHotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter)
+    {
         return false;
     }
 }

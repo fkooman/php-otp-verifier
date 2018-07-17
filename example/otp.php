@@ -37,7 +37,7 @@ $userId = 'foo';
 /** @var string $otpSecret */
 $otpSecret = Base32::encodeUpper(\random_bytes(20));
 /** @var string $otpKey */
-$otpKey = FrkOtp::totp($dateTime, Base32::decodeUpper($otpSecret));
+$otpKey = FrkOtp::totp(Base32::decodeUpper($otpSecret), 'sha1', 6, $dateTime, 30);
 
 // init
 $otpStorage = new Storage(new PDO('sqlite::memory:'));
@@ -51,7 +51,7 @@ $t->register($userId, $otpSecret, $otpKey);
 $dateTime->add(new DateInterval('PT30S'));
 
 /** @var string $otpKey */
-$otpKey = FrkOtp::totp($dateTime, Base32::decodeUpper($otpSecret));
+$otpKey = FrkOtp::totp(Base32::decodeUpper($otpSecret), 'sha1', 6, $dateTime, 30);
 
 // verify the otpKey
 if ($t->verify($userId, $otpKey)) {
