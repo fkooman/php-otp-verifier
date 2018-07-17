@@ -30,11 +30,6 @@ use ParagonIE\ConstantTime\Base32;
 
 class Totp
 {
-    const SECRET_SIZE_BYTES = 20;    // 160 bits
-    const DEFAULT_HASH_ALGORITHM = 'sha1';
-    const DEFAULT_TOTP_PERIOD = 30;
-    const DEFAULT_DIGITS = 6;
-
     /** @var OtpStorageInterface */
     private $storage;
 
@@ -45,32 +40,21 @@ class Totp
     private $dateTime;
 
     /**
-     * @param OtpStorageInterface  $storage
-     * @param OtpVerifierInterface $otpVerifier
+     * @param OtpStorageInterface       $storage
+     * @param null|\DateTime            $dateTime
+     * @param null|OtpVerifierInterface $otpVerifier
      */
-    public function __construct(OtpStorageInterface $storage, OtpVerifierInterface $otpVerifier)
+    public function __construct(OtpStorageInterface $storage, DateTime $dateTime = null, OtpVerifierInterface $otpVerifier = null)
     {
         $this->storage = $storage;
-        $this->otpVerifier = $otpVerifier;
-        $this->dateTime = new DateTime();
-    }
-
-    /**
-     * @param \DateTime $dateTime
-     *
-     * @return void
-     */
-    public function setDateTime(DateTime $dateTime)
-    {
+        if (null === $dateTime) {
+            $dateTime = new DateTime();
+        }
         $this->dateTime = $dateTime;
-    }
-
-    /**
-     * @return string
-     */
-    public static function generateSecret()
-    {
-        return Base32::encodeUpper(\random_bytes(self::SECRET_SIZE_BYTES));
+        if (null === $otpVerifier) {
+            $otpVerifier = new FrkOtpVerifier($dateTime);
+        }
+        $this->otpVerifier = $otpVerifier;
     }
 
     /**

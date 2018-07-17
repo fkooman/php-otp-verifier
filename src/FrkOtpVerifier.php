@@ -32,13 +32,10 @@ class FrkOtpVerifier implements OtpVerifierInterface
     private $dateTime;
 
     /**
-     * @param null|\DateTime $dateTime
+     * @param \DateTime $dateTime
      */
-    public function __construct(DateTime $dateTime = null)
+    public function __construct(DateTime $dateTime)
     {
-        if (null === $dateTime) {
-            $dateTime = new DateTime();
-        }
         $this->dateTime = $dateTime;
     }
 

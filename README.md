@@ -28,7 +28,48 @@ my own minimal library with less than 100 NCLOC, `src/FrkOtp.php`.
 
 # API 
 
-See `example/otp.php`.
+## Database 
+
+
+```php
+$storage = new Storage('sqlite:/path/to/otp.sqlite');
+```
+
+You can call `init()` on the `Storage` object to initialize the database, do
+this only _once_ during application installation:
+
+```php
+$storage->init();
+```
+
+## Registration
+
+The TOTP application will need to be configurated with the secret and generate
+a valid OTP key before registration can succeed. Your application can for 
+example generate an OTP secret, generate a QR code and allow the user to 
+import that in their OTP application.
+
+```php
+$totp = new Totp($storage);
+$userId = 'fkooman';
+$otpSecret = 'H7ISMUHIREODCOONJUOPKJJ4HJCS2PUD';
+$otpKey = '371427';
+$totp->register($userId, $otpSecret, $otpKey);
+```
+
+## Verification
+
+```php
+$userId = 'fkooman';
+$otpKey = '621029';
+if ($totp->verify($userId, $otpKey)) {
+    echo 'VALID!' . PHP_EOL;
+} else {
+    echo 'NOT VALID!' . PHP_EOL;
+}
+```
+
+See `example/otp.php` for a more complete example.
 
 # Inspiration
 

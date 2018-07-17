@@ -27,39 +27,31 @@ require_once \sprintf('%s/vendor/autoload.php', \dirname(__DIR__));
 
 use fkooman\Otp\Exception\OtpException;
 use fkooman\Otp\FrkOtp;
-use fkooman\Otp\FrkOtpVerifier;
 use fkooman\Otp\Storage;
 use fkooman\Otp\Totp;
 use ParagonIE\ConstantTime\Base32;
 
+$dateTime = new DateTime(); // now
 $userId = 'foo';
 
-// initialization
+/** @var string $otpSecret */
+$otpSecret = Base32::encodeUpper(\random_bytes(20));
+/** @var string $otpKey */
+$otpKey = FrkOtp::totp($dateTime, Base32::decodeUpper($otpSecret));
+
+// init
 $otpStorage = new Storage(new PDO('sqlite::memory:'));
 $otpStorage->init();
-$t = new Totp($otpStorage, new FrkOtpVerifier());
-
-/** @var string $otpSecret */
-$otpSecret = Totp::generateSecret();
-
-// obtain a valid otpKey for this secret at this moment
-// NOTE: this is done by the user's OTP application, we do it here just to
-// create a complete example!
-/** @var string $otpKey */
-$otpKey = FrkOtp::totp(new DateTime(), Base32::decodeUpper($otpSecret));
-
-// register the OTP
+$t = new Totp($otpStorage);
 $t->register($userId, $otpSecret, $otpKey);
 
-// we have to wait for to otpKey to be rotated, we need to wait at most 30
-// seconds for the new window... We can't replay the OTP key used for
-// registration...
-echo \sprintf('We have to wait %d seconds for a new OTP key...', 30 - \time() % 30).PHP_EOL;
-while (0 !== \time() % 30) {
-    \sleep(1);
-}
+// we MUST get a new OTP key to do validation, as the OTP key used for the
+// registration cannot be used again (replay protection). So, we generate the
+// OTP key for 30 seconds in the future...
+
+$dateTime->add(new DateInterval('PT30S'));
 /** @var string $otpKey */
-$otpKey = FrkOtp::totp(new DateTime(), Base32::decodeUpper($otpSecret));
+$otpKey = FrkOtp::totp($dateTime, Base32::decodeUpper($otpSecret));
 
 // verify the otpKey
 if ($t->verify($userId, $otpKey)) {
@@ -68,14 +60,14 @@ if ($t->verify($userId, $otpKey)) {
     echo 'NOT VALID!'.PHP_EOL;
 }
 
-// replay the otpKey, this throws the OtpException
+// replay the OTP key, this throws an OtpException as expected...
 try {
     $t->verify($userId, $otpKey);
 } catch (OtpException $e) {
-    echo \sprintf('ERROR: %s', $e->getMessage().PHP_EOL);
+    echo \sprintf('ERROR: %s', $e->getMessage()).PHP_EOL;
 }
 
-// try too many times with wrong otpKey
+// try to brute force the OTP key...
 try {
     $i = 0;
     while (true) {
@@ -83,5 +75,5 @@ try {
         ++$i;
     }
 } catch (OtpException $e) {
-    echo \sprintf('ERROR: %s', $e->getMessage().PHP_EOL);
+    echo \sprintf('ERROR: %s', $e->getMessage()).PHP_EOL;
 }
