@@ -77,7 +77,7 @@ class Totp
      */
     public function getEnrollmentUri($userId, $otpSecret, $otpIssuer)
     {
-        $otpLabel = \sprintf('%s:%s', \rawurlencode($userId), \rawurlencode($otpIssuer));
+        $otpLabel = \sprintf('%s:%s', \rawurlencode($otpIssuer), \rawurlencode($userId));
 
         return \sprintf(
             'otpauth://totp/%s?secret=%s&algorithm=%s&digits=%d&period=%d&issuer=%s',

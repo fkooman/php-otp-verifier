@@ -95,7 +95,7 @@ class TotpTest extends TestCase
     public function testGetEnrollmentUri()
     {
         $this->assertSame(
-            'otpauth://totp/foo%40example.org:My%20Service%20Inc.?secret=H7ISMUHIREODCOONJUOPKJJ4HJCS2PUD&algorithm=SHA1&digits=6&period=30&issuer=My%20Service%20Inc.',
+            'otpauth://totp/My%20Service%20Inc.:foo%40example.org?secret=H7ISMUHIREODCOONJUOPKJJ4HJCS2PUD&algorithm=SHA1&digits=6&period=30&issuer=My%20Service%20Inc.',
             $this->totp->getEnrollmentUri('foo@example.org', 'H7ISMUHIREODCOONJUOPKJJ4HJCS2PUD', 'My Service Inc.')
         );
     }
