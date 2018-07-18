@@ -24,8 +24,6 @@
 
 namespace fkooman\Otp;
 
-use DateInterval;
-use DateTime;
 use ParagonIE\ConstantTime\Binary;
 use RangeException;
 use RuntimeException;
@@ -40,7 +38,7 @@ class FrkOtp implements OtpVerifierInterface
      *
      * @return string
      */
-    public static function hotp($otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter)
+    public function hotp($otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter)
     {
         if (0 > $otpCounter) {
             throw new RangeException('counter must be >= 0');
@@ -71,48 +69,49 @@ class FrkOtp implements OtpVerifierInterface
      *
      * @return bool
      */
-    public static function verifyHotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter)
+    public function verifyHotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter)
     {
         return \hash_equals(self::hotp($otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter), $otpKey);
     }
 
     /**
-     * @param string    $otpSecret
-     * @param string    $otpHashAlgorithm
-     * @param int       $otpDigits
-     * @param \DateTime $dateTime
-     * @param int       $totpPeriod
+     * @param string $otpSecret
+     * @param string $otpHashAlgorithm
+     * @param int    $otpDigits
+     * @param int    $unixTime
+     * @param int    $totpPeriod
      *
      * @return string
      */
-    public static function totp($otpSecret, $otpHashAlgorithm, $otpDigits, DateTime $dateTime, $totpPeriod)
+    public function totp($otpSecret, $otpHashAlgorithm, $otpDigits, $unixTime, $totpPeriod)
     {
-        self::validatePeriod($totpPeriod);
-        $totpTimestamp = $dateTime->getTimestamp();
-        $otpCounter = (int) \floor($totpTimestamp / $totpPeriod);
+        if (0 >= $totpPeriod) {
+            throw new RangeException('period must be > 0');
+        }
+        $otpCounter = (int) ($unixTime / $totpPeriod);
 
         return self::hotp($otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter);
     }
 
     /**
-     * @param string    $otpKey
-     * @param string    $otpSecret
-     * @param string    $otpHashAlgorithm
-     * @param int       $otpDigits
-     * @param \DateTime $dateTime
-     * @param int       $totpPeriod
+     * @param string $otpKey
+     * @param string $otpSecret
+     * @param string $otpHashAlgorithm
+     * @param int    $otpDigits
+     * @param int    $unixTime
+     * @param int    $totpPeriod
      *
      * @return bool
      */
-    public static function verifyTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, DateTime $dateTime, $totpPeriod)
+    public function verifyTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $unixTime, $totpPeriod)
     {
-        $dateTimeList = [
-            $dateTime, // now
-            \date_sub(clone $dateTime, new DateInterval(\sprintf('PT%dS', $totpPeriod))), // - $totpPeriod seconds
-            \date_add(clone $dateTime, new DateInterval(\sprintf('PT%dS', $totpPeriod))), // + $totpPeriod seconds
+        $unixTimeList = [
+            $unixTime,
+            $unixTime - $totpPeriod,
+            $unixTime + $totpPeriod,
         ];
-        foreach ($dateTimeList as $dateTime) {
-            if (\hash_equals(self::totp($otpSecret, $otpHashAlgorithm, $otpDigits, $dateTime, $totpPeriod), $otpKey)) {
+        foreach ($unixTimeList as $unixTime) {
+            if (\hash_equals(self::totp($otpSecret, $otpHashAlgorithm, $otpDigits, $unixTime, $totpPeriod), $otpKey)) {
                 return true;
             }
         }
@@ -143,17 +142,5 @@ class FrkOtp implements OtpVerifierInterface
             \pack('C', ($int >> 16) & 0xff).
             \pack('C', ($int >> 8) & 0xff).
             \pack('C', ($int & 0xff));
-    }
-
-    /**
-     * @param int $totpPeriod
-     *
-     * @return void
-     */
-    private static function validatePeriod($totpPeriod)
-    {
-        if (0 >= $totpPeriod) {
-            throw new RangeException('period must be positive');
-        }
     }
 }

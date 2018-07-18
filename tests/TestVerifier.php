@@ -24,22 +24,21 @@
 
 namespace fkooman\Otp\Tests;
 
-use DateTime;
 use fkooman\Otp\OtpVerifierInterface;
 
 class TestVerifier implements OtpVerifierInterface
 {
     /**
-     * @param string    $otpKey
-     * @param string    $otpSecret
-     * @param string    $otpHashAlgorithm
-     * @param int       $otpDigits
-     * @param \DateTime $dateTime
-     * @param int       $totpPeriod
+     * @param string $otpKey
+     * @param string $otpSecret
+     * @param string $otpHashAlgorithm
+     * @param int    $otpDigits
+     * @param int    $unixTime
+     * @param int    $totpPeriod
      *
      * @return bool
      */
-    public static function verifyTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, DateTime $dateTime, $totpPeriod)
+    public function verifyTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $unixTime, $totpPeriod)
     {
         if ('123456' === $otpKey || '654321' === $otpKey) {
             return true;
@@ -49,15 +48,15 @@ class TestVerifier implements OtpVerifierInterface
     }
 
     /**
-     * @param string    $otpSecret
-     * @param string    $otpHashAlgorithm
-     * @param int       $otpDigits
-     * @param \DateTime $dateTime
-     * @param int       $totpPeriod
+     * @param string $otpSecret
+     * @param string $otpHashAlgorithm
+     * @param int    $otpDigits
+     * @param int    $unixTime
+     * @param int    $totpPeriod
      *
      * @return string
      */
-    public static function totp($otpSecret, $otpHashAlgorithm, $otpDigits, DateTime $dateTime, $totpPeriod)
+    public function totp($otpSecret, $otpHashAlgorithm, $otpDigits, $unixTime, $totpPeriod)
     {
         return '987654';
     }

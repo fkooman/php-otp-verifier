@@ -166,12 +166,12 @@ class Totp
             throw new OtpException('too many attempts at OTP');
         }
 
-        return $this->otpVerifier::verifyTotp(
+        return $this->otpVerifier->verifyTotp(
             $otpKey,
             Base32::decodeUpper($otpSecret),
             $this->otpAlgorithm,
             $this->otpDigits,
-            $this->dateTime,
+            $this->dateTime->getTimestamp(),
             $this->totpPeriod
         );
     }

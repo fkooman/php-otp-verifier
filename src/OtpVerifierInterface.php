@@ -24,30 +24,28 @@
 
 namespace fkooman\Otp;
 
-use DateTime;
-
 interface OtpVerifierInterface
 {
     /**
-     * @param string    $otpKey
-     * @param string    $otpSecret
-     * @param string    $otpHashAlgorithm
-     * @param int       $otpDigits
-     * @param \DateTime $dateTime
-     * @param int       $totpPeriod
+     * @param string $otpKey
+     * @param string $otpSecret
+     * @param string $otpHashAlgorithm
+     * @param int    $otpDigits
+     * @param int    $unixTime
+     * @param int    $totpPeriod
      *
      * @return bool
      */
-    public static function verifyTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, DateTime $dateTime, $totpPeriod);
+    public function verifyTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $unixTime, $totpPeriod);
 
     /**
-     * @param string    $otpSecret
-     * @param string    $otpHashAlgorithm
-     * @param int       $otpDigits
-     * @param \DateTime $dateTime
-     * @param int       $totpPeriod
+     * @param string $otpSecret
+     * @param string $otpHashAlgorithm
+     * @param int    $otpDigits
+     * @param int    $unixTime
+     * @param int    $totpPeriod
      *
      * @return string
      */
-    public static function totp($otpSecret, $otpHashAlgorithm, $otpDigits, DateTime $dateTime, $totpPeriod);
+    public function totp($otpSecret, $otpHashAlgorithm, $otpDigits, $unixTime, $totpPeriod);
 }
