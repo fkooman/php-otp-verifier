@@ -69,6 +69,36 @@ class Totp
     }
 
     /**
+     * @param string $otpAlgorithm
+     *
+     * @return void
+     */
+    public function setAlgorithm($otpAlgorithm)
+    {
+        $this->otpAlgorithm = $otpAlgorithm;
+    }
+
+    /**
+     * @param int $otpDigits
+     *
+     * @return void
+     */
+    public function setDigits($otpDigits)
+    {
+        $this->otpDigits = $otpDigits;
+    }
+
+    /**
+     * @param int $totpPeriod
+     *
+     * @return void
+     */
+    public function setPeriod($totpPeriod)
+    {
+        $this->totpPeriod = $totpPeriod;
+    }
+
+    /**
      * @param string $userId
      * @param string $otpSecret
      * @param string $otpIssuer
@@ -131,36 +161,6 @@ class Totp
         }
 
         return $this->verifyWithSecret($userId, $otpSecret, $otpKey);
-    }
-
-    /**
-     * @param string $otpAlgorithm
-     *
-     * @return void
-     */
-    public function setAlgorithm($otpAlgorithm)
-    {
-        $this->otpAlgorithm = $otpAlgorithm;
-    }
-
-    /**
-     * @param int $otpDigits
-     *
-     * @return void
-     */
-    public function setDigits($otpDigits)
-    {
-        $this->otpDigits = $otpDigits;
-    }
-
-    /**
-     * @param int $totpPeriod
-     *
-     * @return void
-     */
-    public function setParameters($totpPeriod)
-    {
-        $this->totpPeriod = $totpPeriod;
     }
 
     /**
