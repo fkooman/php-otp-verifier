@@ -141,11 +141,13 @@ class Totp
             throw new OtpException(\sprintf('user "%s" already has an OTP secret', $userId));
         }
 
-        if (false === $this->verifyWithSecret($userId, $otpSecret, $otpKey)) {
+        $otpInfo = new OtpInfo($otpSecret, $this->otpAlgorithm, $this->otpDigits, $this->totpPeriod);
+
+        if (false === $this->verifyWithSecret($userId, $otpKey, $otpInfo)) {
             throw new OtpException('invalid OTP code');
         }
 
-        $this->storage->setOtpSecret($userId, $otpSecret);
+        $this->storage->setOtpSecret($userId, $otpInfo);
     }
 
     /**
@@ -156,21 +158,21 @@ class Totp
      */
     public function verify($userId, $otpKey)
     {
-        if (false === $otpSecret = $this->storage->getOtpSecret($userId)) {
+        if (false === $otpInfo = $this->storage->getOtpSecret($userId)) {
             throw new OtpException(\sprintf('user "%s" has no OTP secret', $userId));
         }
 
-        return $this->verifyWithSecret($userId, $otpSecret, $otpKey);
+        return $this->verifyWithSecret($userId, $otpKey, $otpInfo);
     }
 
     /**
-     * @param string $userId
-     * @param string $otpSecret
-     * @param string $otpKey
+     * @param string  $userId
+     * @param string  $otpKey
+     * @param OtpInfo $otpInfo
      *
      * @return bool
      */
-    private function verifyWithSecret($userId, $otpSecret, $otpKey)
+    private function verifyWithSecret($userId, $otpKey, OtpInfo $otpInfo)
     {
         // store the attempt even before validating it, to be able to count
         // the (failed) attempts and also replay attacks
@@ -184,11 +186,11 @@ class Totp
 
         return $this->otpVerifier->verifyTotp(
             $otpKey,
-            Base32::decodeUpper($otpSecret),
-            $this->otpAlgorithm,
-            $this->otpDigits,
+            Base32::decodeUpper($otpInfo->getSecret()),
+            $otpInfo->getAlgorithm(),
+            $otpInfo->getDigits(),
             $this->dateTime->getTimestamp(),
-            $this->totpPeriod
+            $otpInfo->getPeriod()
         );
     }
 }

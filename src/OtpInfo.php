@@ -24,52 +24,63 @@
 
 namespace fkooman\Otp;
 
-use DateTime;
-
-interface OtpStorageInterface
+class OtpInfo
 {
-    /**
-     * @param string $userId
-     *
-     * @return false|OtpInfo
-     */
-    public function getOtpSecret($userId);
+    /** @var string */
+    private $otpSecret;
+
+    /** @var string */
+    private $otpAlgorithm;
+
+    /** @var int */
+    private $otpDigits;
+
+    /** @var int */
+    private $totpPeriod;
 
     /**
-     * @param string  $userId
-     * @param OtpInfo $otpInfo
-     *
-     * @return void
+     * @param string $otpSecret
+     * @param string $otpAlgorithm
+     * @param int    $otpDigits
+     * @param int    $totpPeriod
      */
-    public function setOtpSecret($userId, OtpInfo $otpInfo);
+    public function __construct($otpSecret, $otpAlgorithm, $otpDigits, $totpPeriod)
+    {
+        $this->otpSecret = $otpSecret;
+        $this->otpAlgorithm = $otpAlgorithm;
+        $this->otpDigits = $otpDigits;
+        $this->totpPeriod = $totpPeriod;
+    }
 
     /**
-     * @param string $userId
-     *
-     * @return void
+     * @return string
      */
-    public function deleteOtpSecret($userId);
+    public function getSecret()
+    {
+        return $this->otpSecret;
+    }
 
     /**
-     * @param string $userId
-     *
+     * @return string
+     */
+    public function getAlgorithm()
+    {
+        return $this->otpAlgorithm;
+    }
+
+    /**
      * @return int
      */
-    public function getOtpAttemptCount($userId);
+    public function getDigits()
+    {
+        return $this->otpDigits;
+    }
 
     /**
-     * @param string    $userId
-     * @param string    $totpKey
-     * @param \DateTime $dateTime
-     *
-     * @return bool
+     * @return int
      */
-    public function recordOtpKey($userId, $totpKey, DateTime $dateTime);
-
-    /**
-     * @param \DateTime $dateTime
-     *
-     * @return void
-     */
-    public function cleanOtpLog(DateTime $dateTime);
+    public function getPeriod()
+    {
+        return $this->totpPeriod;
+    }
 }

@@ -45,28 +45,43 @@ class Storage implements OtpStorageInterface
     /**
      * @param string $userId
      *
-     * @return false|string
+     * @return false|OtpInfo
      */
     public function getOtpSecret($userId)
     {
-        $stmt = $this->dbh->prepare('SELECT otp_secret FROM otp WHERE user_id = :user_id');
+        $stmt = $this->dbh->prepare('SELECT otp_secret, otp_algorithm, otp_digits, totp_period FROM otp WHERE user_id = :user_id');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
         $stmt->execute();
 
-        return $stmt->fetchColumn();
+        /** @var false|array<string, string|int> */
+        $otpInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (false === $otpInfo) {
+            return false;
+        }
+
+        return new OtpInfo(
+            (string) $otpInfo['otp_secret'],
+            (string) $otpInfo['otp_algorithm'],
+            (int) $otpInfo['otp_digits'],
+            (int) $otpInfo['totp_period']
+        );
     }
 
     /**
-     * @param string $userId
-     * @param string $otpSecret
+     * @param string  $userId
+     * @param OtpInfo $otpInfo
      *
      * @return void
      */
-    public function setOtpSecret($userId, $otpSecret)
+    public function setOtpSecret($userId, OtpInfo $otpInfo)
     {
-        $stmt = $this->dbh->prepare('INSERT INTO otp (user_id, otp_secret) VALUES(:user_id, :otp_secret)');
+        $stmt = $this->dbh->prepare('INSERT INTO otp (user_id, otp_secret, otp_algorithm, otp_digits, totp_period) VALUES(:user_id, :otp_secret, :otp_algorithm, :otp_digits, :totp_period)');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
-        $stmt->bindValue(':otp_secret', $otpSecret, PDO::PARAM_STR);
+        $stmt->bindValue(':otp_secret', $otpInfo->getSecret(), PDO::PARAM_STR);
+        $stmt->bindValue(':otp_algorithm', $otpInfo->getAlgorithm(), PDO::PARAM_STR);
+        $stmt->bindValue(':otp_digits', $otpInfo->getDigits(), PDO::PARAM_INT);
+        $stmt->bindValue(':totp_period', $otpInfo->getPeriod(), PDO::PARAM_INT);
+
         $stmt->execute();
     }
 
@@ -149,7 +164,10 @@ class Storage implements OtpStorageInterface
 <<<'EOT'
 CREATE TABLE otp(
   user_id VARCHAR(255) NOT NULL PRIMARY KEY UNIQUE,
-  otp_secret VARCHAR(255) NOT NULL
+  otp_secret VARCHAR(255) NOT NULL,
+  otp_algorithm VARCHAR(255) NOT NULL,
+  otp_digits INTEGER NOT NULL,
+  totp_period INTEGER NOT NULL
 )
 EOT
         );
