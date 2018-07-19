@@ -135,15 +135,31 @@ class Totp
 
     /**
      * @param string $otpAlgorithm
-     * @param int    $otpDigits
-     * @param int    $totpPeriod
      *
      * @return void
      */
-    public function setParameters($otpAlgorithm, $otpDigits, $totpPeriod)
+    public function setAlgorithm($otpAlgorithm)
     {
         $this->otpAlgorithm = $otpAlgorithm;
+    }
+
+    /**
+     * @param int $otpDigits
+     *
+     * @return void
+     */
+    public function setDigits($otpDigits)
+    {
         $this->otpDigits = $otpDigits;
+    }
+
+    /**
+     * @param int $totpPeriod
+     *
+     * @return void
+     */
+    public function setParameters($totpPeriod)
+    {
         $this->totpPeriod = $totpPeriod;
     }
 
@@ -163,7 +179,7 @@ class Totp
         }
 
         if (self::OTP_MAX_ATTEMPT_COUNT < $this->storage->getOtpAttemptCount($userId)) {
-            throw new OtpException('too many attempts at OTP');
+            throw new OtpException('too many attempts');
         }
 
         return $this->otpVerifier->verifyTotp(

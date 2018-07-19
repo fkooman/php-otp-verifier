@@ -88,7 +88,7 @@ class TotpTest extends TestCase
             $this->totp->verify('foo', '555555');
             $this->fail();
         } catch (OtpException $e) {
-            $this->assertSame('too many attempts at OTP', $e->getMessage());
+            $this->assertSame('too many attempts', $e->getMessage());
         }
     }
 
