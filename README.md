@@ -61,7 +61,7 @@ You can modify these by calling the respective methods:
     $totp->setPeriod(15);
 ```
 
-Not all OTP clients will support all options. The default options work 
+Not all OTP clients will support all options. The _default_ options work 
 everywhere I tested. Google Authenticator ONLY works with the defaults.
 
 ## Registration
