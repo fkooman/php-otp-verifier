@@ -49,7 +49,7 @@ class Storage implements OtpStorageInterface
      */
     public function getOtpSecret($userId)
     {
-        $stmt = $this->dbh->prepare('SELECT otp_secret, otp_algorithm, otp_digits, totp_period FROM otp WHERE user_id = :user_id');
+        $stmt = $this->dbh->prepare('SELECT otp_secret, otp_hash_algorithm, otp_digits, totp_period FROM otp WHERE user_id = :user_id');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
         $stmt->execute();
 
@@ -61,7 +61,7 @@ class Storage implements OtpStorageInterface
 
         return new OtpInfo(
             (string) $otpInfo['otp_secret'],
-            (string) $otpInfo['otp_algorithm'],
+            (string) $otpInfo['otp_hash_algorithm'],
             (int) $otpInfo['otp_digits'],
             (int) $otpInfo['totp_period']
         );
@@ -75,10 +75,10 @@ class Storage implements OtpStorageInterface
      */
     public function setOtpSecret($userId, OtpInfo $otpInfo)
     {
-        $stmt = $this->dbh->prepare('INSERT INTO otp (user_id, otp_secret, otp_algorithm, otp_digits, totp_period) VALUES(:user_id, :otp_secret, :otp_algorithm, :otp_digits, :totp_period)');
+        $stmt = $this->dbh->prepare('INSERT INTO otp (user_id, otp_secret, otp_hash_algorithm, otp_digits, totp_period) VALUES(:user_id, :otp_secret, :otp_hash_algorithm, :otp_digits, :totp_period)');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
         $stmt->bindValue(':otp_secret', $otpInfo->getSecret(), PDO::PARAM_STR);
-        $stmt->bindValue(':otp_algorithm', $otpInfo->getAlgorithm(), PDO::PARAM_STR);
+        $stmt->bindValue(':otp_hash_algorithm', $otpInfo->getHashAlgorithm(), PDO::PARAM_STR);
         $stmt->bindValue(':otp_digits', $otpInfo->getDigits(), PDO::PARAM_INT);
         $stmt->bindValue(':totp_period', $otpInfo->getPeriod(), PDO::PARAM_INT);
 
@@ -165,7 +165,7 @@ class Storage implements OtpStorageInterface
 CREATE TABLE otp(
   user_id VARCHAR(255) NOT NULL PRIMARY KEY UNIQUE,
   otp_secret VARCHAR(255) NOT NULL,
-  otp_algorithm VARCHAR(255) NOT NULL,
+  otp_hash_algorithm VARCHAR(255) NOT NULL,
   otp_digits INTEGER NOT NULL,
   totp_period INTEGER NOT NULL
 )

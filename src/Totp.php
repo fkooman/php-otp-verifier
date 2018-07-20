@@ -42,7 +42,7 @@ class Totp
     private $dateTime;
 
     /** @var string */
-    private $otpAlgorithm = 'sha1';
+    private $otpHashAlgorithm = 'sha1';
 
     /** @var int */
     private $otpDigits = 6;
@@ -69,13 +69,13 @@ class Totp
     }
 
     /**
-     * @param string $otpAlgorithm
+     * @param string $otpHashAlgorithm
      *
      * @return void
      */
-    public function setAlgorithm($otpAlgorithm)
+    public function setHashAlgorithm($otpHashAlgorithm)
     {
-        $this->otpAlgorithm = $otpAlgorithm;
+        $this->otpHashAlgorithm = $otpHashAlgorithm;
     }
 
     /**
@@ -113,7 +113,7 @@ class Totp
             'otpauth://totp/%s?secret=%s&algorithm=%s&digits=%d&period=%d&issuer=%s',
             $otpLabel,
             $otpSecret,
-            \strtoupper($this->otpAlgorithm),
+            \strtoupper($this->otpHashAlgorithm),
             $this->otpDigits,
             $this->totpPeriod,
             \rawurlencode($otpIssuer)
@@ -141,7 +141,7 @@ class Totp
             throw new OtpException(\sprintf('user "%s" already has an OTP secret', $userId));
         }
 
-        $otpInfo = new OtpInfo($otpSecret, $this->otpAlgorithm, $this->otpDigits, $this->totpPeriod);
+        $otpInfo = new OtpInfo($otpSecret, $this->otpHashAlgorithm, $this->otpDigits, $this->totpPeriod);
 
         if (false === $this->verifyWithSecret($userId, $otpKey, $otpInfo)) {
             throw new OtpException('invalid OTP code');
@@ -187,7 +187,7 @@ class Totp
         return $this->otpVerifier->verifyTotp(
             $otpKey,
             Base32::decodeUpper($otpInfo->getSecret()),
-            $otpInfo->getAlgorithm(),
+            $otpInfo->getHashAlgorithm(),
             $otpInfo->getDigits(),
             $this->dateTime->getTimestamp(),
             $otpInfo->getPeriod()

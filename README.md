@@ -56,7 +56,7 @@ You can modify these by calling the respective methods:
 
 ```php
     $totp = new Totp($storage);
-    $totp->setAlgorithm('sha256');
+    $totp->setHashAlgorithm('sha256');
     $totp->setDigits(8);
     $totp->setPeriod(15);
 ```

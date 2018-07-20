@@ -30,7 +30,7 @@ class OtpInfo
     private $otpSecret;
 
     /** @var string */
-    private $otpAlgorithm;
+    private $otpHashAlgorithm;
 
     /** @var int */
     private $otpDigits;
@@ -40,14 +40,14 @@ class OtpInfo
 
     /**
      * @param string $otpSecret
-     * @param string $otpAlgorithm
+     * @param string $otpHashAlgorithm
      * @param int    $otpDigits
      * @param int    $totpPeriod
      */
-    public function __construct($otpSecret, $otpAlgorithm, $otpDigits, $totpPeriod)
+    public function __construct($otpSecret, $otpHashAlgorithm, $otpDigits, $totpPeriod)
     {
         $this->otpSecret = $otpSecret;
-        $this->otpAlgorithm = $otpAlgorithm;
+        $this->otpHashAlgorithm = $otpHashAlgorithm;
         $this->otpDigits = $otpDigits;
         $this->totpPeriod = $totpPeriod;
     }
@@ -63,9 +63,9 @@ class OtpInfo
     /**
      * @return string
      */
-    public function getAlgorithm()
+    public function getHashAlgorithm()
     {
-        return $this->otpAlgorithm;
+        return $this->otpHashAlgorithm;
     }
 
     /**
