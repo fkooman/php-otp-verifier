@@ -1,10 +1,12 @@
 # Changelog
 
-## 0.2.0 (...)
+## 0.2.0 (2018-07-20)
 - simplified API
 - remove obsolete code
 - remove a lot of abstractions
 - store used hash algorithm, number of digits and TOTP period in database
+- document API in README
+- removed example
 
 ## 0.1.1 (2018-07-16)
 - code cleanups

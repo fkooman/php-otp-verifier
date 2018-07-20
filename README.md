@@ -3,8 +3,8 @@ attacks with support for PHP >= 5.4.
 
 # What
 
-This is a library that includes HOTP and TOTP verification and protection 
-against replay and brute force attacks.
+This is a library that includes TOTP verification and protection against replay 
+and brute force attacks. In the future HOTP may be supported as well.
 
 # Why
 
@@ -21,7 +21,7 @@ my own minimal library with less than 100 NCLOC, `src/FrkOtp.php`.
 # Features
 
 * Supports PHP >= 5.4;
-* Verifies HOTP and TOTP codes;
+* Verifies TOTP codes;
 * Protects againts replay attacks by storing the (used) OTP keys;
 * Protects against brute force attacks by limiting the number of attempts in 
   a certain time frame.
@@ -72,8 +72,6 @@ example generate an OTP secret, generate a QR code and allow the user to
 import that in their OTP application.
 
 ```php
-    $totp = new Totp($storage);
-    $userId = 'foo@example.org';
     $otpSecret = Totp::generateSecret();
 ```
 
@@ -83,6 +81,8 @@ easier for users to configure their application. This library can generate a
 to make this easier with all the right parameters set:
 
 ```php
+    $totp = new Totp($storage);
+    $userId = 'foo@example.org';
     $totp->getEnrollmentUri($userId, $otpSecret, 'My Service Inc.');
 ```
 
@@ -97,6 +97,9 @@ registration:
     $otpKey = '371427';
     $totp->register($userId, $otpSecret, $otpKey);
 ```
+
+The `Totp::register` method will throw an `OtpException` if registration 
+failed.
 
 ## Verification
 
@@ -117,12 +120,8 @@ OTP secret.
 **NOTE**: you can not reuse the OTP key used for registration for verification
 afterwards. You have to wait for the next window.
 
-## Error Handling
-
-The library will throw an `OtpException` when:
-
-* an OTP key is reused;
-* too many attempts (brute force) with wrong OTP keys took place.
+The `Totp::verify` method will throw an `OtpException`, either when the OTP 
+code is replayed, or when the limit of verifications was reached.
 
 # Inspiration
 
@@ -134,7 +133,7 @@ for the `intToByteArray` method adapted from the `Util::store64_le` method;
 * [christian-riesen/otp](https://github.com/ChristianRiesen/otp) (MIT) and 
   [spomky-labs/otphp](https://github.com/Spomky-Labs/otphp) (MIT), mostly for
   the ideas regarding accepting TOTP keys from the previous and next time 
-  window.
+  window(s).
 
 # License 
 
