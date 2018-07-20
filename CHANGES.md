@@ -3,7 +3,8 @@
 ## 0.2.0 (...)
 - simplified API
 - remove obsolete code
-- less abstraction
+- remove a lot of abstractions
+- store used hash algorithm, number of digits and TOTP period in database
 
 ## 0.1.1 (2018-07-16)
 - code cleanups
