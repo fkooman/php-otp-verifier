@@ -55,9 +55,9 @@ class FrkOtp implements OtpVerifierInterface
             | (\ord($hashResult[$hashOffset + 1]) & 0xff) << 16
             | (\ord($hashResult[$hashOffset + 2]) & 0xff) << 8
             | (\ord($hashResult[$hashOffset + 3]) & 0xff);
-        $otp = $binaryCode % \pow(10, $otpDigits);
+        $otpKey = $binaryCode % \pow(10, $otpDigits);
 
-        return \str_pad((string) $otp, $otpDigits, '0', STR_PAD_LEFT);
+        return \str_pad((string) $otpKey, $otpDigits, '0', STR_PAD_LEFT);
     }
 
     /**
