@@ -115,7 +115,9 @@ class FrkOtpTest extends TestCase
             $this->assertSame($otpKey, $frkOtp->totp($otpSecret, $otpHashAlgorithm, $otpDigits, $unixTime, $totpPeriod));
             $this->assertTrue($frkOtp->verifyTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $unixTime, $totpPeriod));
         } else {
-            $this->assertTrue($dateTime >= new DateTime('@'.PHP_INT_MAX));
+            // this happens on 32 bit PHP, make sure the DateTime is actually
+            // after the "Year 2038 problem"
+            $this->assertTrue($dateTime > new DateTime('@'.PHP_INT_MAX));
         }
     }
 
