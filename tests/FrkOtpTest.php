@@ -110,9 +110,13 @@ class FrkOtpTest extends TestCase
      */
     public function testTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, DateTime $dateTime, $totpPeriod)
     {
-        $frkOtp = new FrkOtp();
-        $this->assertSame($otpKey, $frkOtp->totp($otpSecret, $otpHashAlgorithm, $otpDigits, $dateTime->getTimestamp(), $totpPeriod));
-        $this->assertTrue($frkOtp->verifyTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $dateTime->getTimestamp(), $totpPeriod));
+        if (false !== $unixTime = $dateTime->getTimestamp()) {
+            $frkOtp = new FrkOtp();
+            $this->assertSame($otpKey, $frkOtp->totp($otpSecret, $otpHashAlgorithm, $otpDigits, $unixTime, $totpPeriod));
+            $this->assertTrue($frkOtp->verifyTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $unixTime, $totpPeriod));
+        } else {
+            $this->assertTrue($dateTime >= new DateTime('@'.PHP_INT_MAX));
+        }
     }
 
     public function testTotpWindow()
