@@ -143,8 +143,8 @@ class FrkOtp implements OtpVerifierInterface
         }
 
         // 32 bit PHP
-        // we know we have a valid 32 bit timestamp, otherwise
-        // DateTime::getTimestamp() would have returned false already...
+        // we know we have a 32 bit timestamp... so the first 4 bytes will
+        // always be \x00
         return "\x00\x00\x00\x00".\pack('N', $int);
     }
 }

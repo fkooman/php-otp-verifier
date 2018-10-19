@@ -186,8 +186,8 @@ class Totp
         }
 
         if (false === $unixTime = $this->dateTime->getTimestamp()) {
-            // DateTime::getTimestamp() returns false after 2038 on 32 bit
-            // systems...
+            // DateTime::getTimestamp() returns false after @PHP_INT_MAX on 32
+            // bit systems...
             throw new RuntimeException('failure getting timestamp, year 2038 problem?');
         }
 
