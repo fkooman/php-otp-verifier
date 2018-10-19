@@ -14,9 +14,9 @@ High quality OTP verification libraries exist, e.g.
 work well, however, they lack built-in support for protection against replay 
 attacks and brute force attempts.
 
-We needed a library that works on PHP >= 5.4, with only 64 bit support. While
-it would have been possible to use `christian-riesen/otp` I decided to write
-my own minimal library with less than 100 NCLOC, `src/FrkOtp.php`.
+We needed a library that works on PHP >= 5.4. While it would have been possible 
+to use `christian-riesen/otp` I decided to write my own minimal library with 
+less than 100 NCLOC, `src/FrkOtp.php`.
 
 # Features
 
