@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.1 (2018-10-20)
+- restore 32 bit PHP support
+
 ## 0.2.0 (2018-07-20)
 - simplified API
 - remove obsolete code
