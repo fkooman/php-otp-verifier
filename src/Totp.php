@@ -27,6 +27,7 @@ namespace fkooman\Otp;
 use DateTime;
 use fkooman\Otp\Exception\OtpException;
 use ParagonIE\ConstantTime\Base32;
+use RuntimeException;
 
 class Totp
 {
@@ -184,12 +185,18 @@ class Totp
             throw new OtpException('too many attempts');
         }
 
+        if (false === $unixTime = $this->dateTime->getTimestamp()) {
+            // DateTime::getTimestamp() returns false after 2038 on 32 bit
+            // systems...
+            throw new RuntimeException('failure getting timestamp, year 2038 problem?');
+        }
+
         return $this->otpVerifier->verifyTotp(
             $otpKey,
             Base32::decodeUpper($otpInfo->getSecret()),
             $otpInfo->getHashAlgorithm(),
             $otpInfo->getDigits(),
-            $this->dateTime->getTimestamp(),
+            $unixTime,
             $otpInfo->getPeriod()
         );
     }

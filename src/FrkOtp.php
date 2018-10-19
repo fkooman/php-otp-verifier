@@ -126,21 +126,25 @@ class FrkOtp implements OtpVerifierInterface
      */
     private static function intToByteArray($int)
     {
-        if (8 !== PHP_INT_SIZE) {
-            throw new RuntimeException('only 64 bit PHP installations are supported');
+        if (8 === PHP_INT_SIZE) {
+            // 64 bit PHP
+            if (\PHP_VERSION_ID >= 50603) {
+                return \pack('J', $int);
+            }
+
+            return \pack('C', ($int >> 56) & 0xff).
+                \pack('C', ($int >> 48) & 0xff).
+                \pack('C', ($int >> 40) & 0xff).
+                \pack('C', ($int >> 32) & 0xff).
+                \pack('C', ($int >> 24) & 0xff).
+                \pack('C', ($int >> 16) & 0xff).
+                \pack('C', ($int >> 8) & 0xff).
+                \pack('C', ($int & 0xff));
         }
 
-        if (\PHP_VERSION_ID >= 50603) {
-            return \pack('J', $int);
-        }
-
-        return \pack('C', ($int >> 56) & 0xff).
-            \pack('C', ($int >> 48) & 0xff).
-            \pack('C', ($int >> 40) & 0xff).
-            \pack('C', ($int >> 32) & 0xff).
-            \pack('C', ($int >> 24) & 0xff).
-            \pack('C', ($int >> 16) & 0xff).
-            \pack('C', ($int >> 8) & 0xff).
-            \pack('C', ($int & 0xff));
+        // 32 bit PHP
+        // we know we have a valid 32 bit timestamp, otherwise
+        // DateTime::getTimestamp() would have returned false already...
+        return \pack('N', $int);
     }
 }
