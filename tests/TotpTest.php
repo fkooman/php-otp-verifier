@@ -53,19 +53,19 @@ class TotpTest extends TestCase
         $this->totp->register('foo', Base32::encodeUpper('12345678901234567890'), '123456');
     }
 
-    public function testVerifySuccess()
-    {
-        $this->assertTrue($this->totp->verify('foo', '654321'));
-    }
-
     public function testVerifyFail()
     {
-        $this->assertFalse($this->totp->verify('foo', '999999'));
+        try {
+            $this->totp->verify('foo', '999999');
+            $this->fail();
+        } catch (OtpException $e) {
+            $this->assertSame('invalid OTP code', $e->getMessage());
+        }
     }
 
     public function testReplay()
     {
-        $this->assertTrue($this->totp->verify('foo', '654321'));
+        $this->totp->verify('foo', '654321');
         try {
             $this->totp->verify('foo', '654321');
             $this->fail();
@@ -77,13 +77,16 @@ class TotpTest extends TestCase
     public function testTooManyAttempt()
     {
         for ($i = 0; $i < 59; ++$i) {
-            $this->assertFalse(
+            try {
                 $this->totp->verify(
                     'foo',
                     \sprintf('%s', 234567 + $i)
-                )
-            );
+                );
+            } catch (OtpException $e) {
+                $this->assertSame('invalid OTP code', $e->getMessage());
+            }
         }
+
         try {
             $this->totp->verify('foo', '555555');
             $this->fail();

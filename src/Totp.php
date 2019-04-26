@@ -53,8 +53,8 @@ class Totp
 
     /**
      * @param OtpStorageInterface       $storage
-     * @param null|OtpVerifierInterface $otpVerifier
-     * @param null|\DateTime            $dateTime
+     * @param OtpVerifierInterface|null $otpVerifier
+     * @param \DateTime|null            $dateTime
      */
     public function __construct(OtpStorageInterface $storage, OtpVerifierInterface $otpVerifier = null, DateTime $dateTime = null)
     {
@@ -143,11 +143,7 @@ class Totp
         }
 
         $otpInfo = new OtpInfo($otpSecret, $this->otpHashAlgorithm, $this->otpDigits, $this->totpPeriod);
-
-        if (false === $this->verifyWithSecret($userId, $otpKey, $otpInfo)) {
-            throw new OtpException('invalid OTP code');
-        }
-
+        $this->verifyWithSecret($userId, $otpKey, $otpInfo);
         $this->storage->setOtpSecret($userId, $otpInfo);
     }
 
@@ -155,7 +151,7 @@ class Totp
      * @param string $userId
      * @param string $otpKey
      *
-     * @return bool
+     * @return void
      */
     public function verify($userId, $otpKey)
     {
@@ -163,7 +159,7 @@ class Totp
             throw new OtpException(\sprintf('user "%s" has no OTP secret', $userId));
         }
 
-        return $this->verifyWithSecret($userId, $otpKey, $otpInfo);
+        $this->verifyWithSecret($userId, $otpKey, $otpInfo);
     }
 
     /**
@@ -171,7 +167,7 @@ class Totp
      * @param string  $otpKey
      * @param OtpInfo $otpInfo
      *
-     * @return bool
+     * @return void
      */
     private function verifyWithSecret($userId, $otpKey, OtpInfo $otpInfo)
     {
@@ -191,7 +187,7 @@ class Totp
             throw new RuntimeException('failure getting timestamp, year 2038 problem?');
         }
 
-        return $this->otpVerifier->verifyTotp(
+        $isValid = $this->otpVerifier->verifyTotp(
             $otpKey,
             Base32::decodeUpper($otpInfo->getSecret()),
             $otpInfo->getHashAlgorithm(),
@@ -199,5 +195,9 @@ class Totp
             $unixTime,
             $otpInfo->getPeriod()
         );
+
+        if (!$isValid) {
+            throw new OtpException('invalid OTP code');
+        }
     }
 }

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0 (...)
+- always throw `OtpException` when OTP verification fails instead of `bool` 
+  return value
+
 ## 0.2.1 (2018-10-20)
 - restore 32 bit PHP support
 
