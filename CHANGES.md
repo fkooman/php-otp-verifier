@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 (...)
+## 0.3.0 (2019-08-11)
 - always throw `OtpException` when OTP verification fails instead of `bool` 
   return value
 
