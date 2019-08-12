@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.1 (...)
+## 0.3.1 (2019-08-12)
 - fix URL encoding of OTP label for QR code
 
 ## 0.3.0 (2019-08-11)
