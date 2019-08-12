@@ -103,6 +103,15 @@ class TotpTest extends TestCase
         );
     }
 
+    public function testGetEnrollmentUriColon()
+    {
+        $this->assertSame(
+            'otpauth://totp/vpn.tuxed.net:https_%2F%2Fidp.tuxed.net%2Fmetadata%21https_%2F%2Fvpn.tuxed.net%2Fvpn-user-portal%2F_saml%2Fmetadata%21g1Bd2dM7ugdEVZlpKBoWUCL3GWc4LdewUW1YkgUnVEg%0A?secret=H7ISMUHIREODCOONJUOPKJJ4HJCS2PUD&algorithm=SHA1&digits=6&period=30&issuer=vpn.tuxed.net',
+            $this->totp->getEnrollmentUri('https://idp.tuxed.net/metadata!https://vpn.tuxed.net/vpn-user-portal/_saml/metadata!g1Bd2dM7ugdEVZlpKBoWUCL3GWc4LdewUW1YkgUnVEg
+', 'H7ISMUHIREODCOONJUOPKJJ4HJCS2PUD', 'vpn.tuxed.net')
+        );
+    }
+
     public function testGenerateSecret()
     {
         $this->assertSame(32, \strlen(Totp::generateSecret()));
