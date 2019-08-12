@@ -108,7 +108,13 @@ class Totp
      */
     public function getEnrollmentUri($userId, $otpSecret, $otpIssuer)
     {
-        $otpLabel = \sprintf('%s:%s', \rawurlencode($otpIssuer), \rawurlencode($userId));
+        // label cannot contain ':' more than once, it is used to separate
+        // the issuer from the account
+        $otpLabel = \sprintf(
+            '%s:%s',
+            self::labelEncode($otpIssuer),
+            self::labelEncode($userId)
+        );
 
         return \sprintf(
             'otpauth://totp/%s?secret=%s&algorithm=%s&digits=%d&period=%d&issuer=%s',
@@ -117,7 +123,7 @@ class Totp
             \strtoupper($this->otpHashAlgorithm),
             $this->otpDigits,
             $this->totpPeriod,
-            \rawurlencode($otpIssuer)
+            self::labelEncode($otpIssuer)
         );
     }
 
@@ -199,5 +205,15 @@ class Totp
         if (!$isValid) {
             throw new OtpException('invalid OTP code');
         }
+    }
+
+    /**
+     * @param string $labelStr
+     *
+     * @return string
+     */
+    private static function labelEncode($labelStr)
+    {
+        return \rawurlencode(\str_replace(':', '_', $labelStr));
     }
 }
