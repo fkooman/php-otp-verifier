@@ -36,8 +36,7 @@ interface OtpStorageInterface
     public function getOtpSecret($userId);
 
     /**
-     * @param string  $userId
-     * @param OtpInfo $otpInfo
+     * @param string $userId
      *
      * @return void
      */
@@ -58,17 +57,14 @@ interface OtpStorageInterface
     public function getOtpAttemptCount($userId);
 
     /**
-     * @param string    $userId
-     * @param string    $totpKey
-     * @param \DateTime $dateTime
+     * @param string $userId
+     * @param string $totpKey
      *
      * @return bool
      */
     public function recordOtpKey($userId, $totpKey, DateTime $dateTime);
 
     /**
-     * @param \DateTime $dateTime
-     *
      * @return void
      */
     public function cleanOtpLog(DateTime $dateTime);

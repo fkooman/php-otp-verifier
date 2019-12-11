@@ -51,11 +51,6 @@ class Totp
     /** @var int */
     private $totpPeriod = 30;
 
-    /**
-     * @param OtpStorageInterface       $storage
-     * @param OtpVerifierInterface|null $otpVerifier
-     * @param \DateTime|null            $dateTime
-     */
     public function __construct(OtpStorageInterface $storage, OtpVerifierInterface $otpVerifier = null, DateTime $dateTime = null)
     {
         $this->storage = $storage;
@@ -169,9 +164,8 @@ class Totp
     }
 
     /**
-     * @param string  $userId
-     * @param string  $otpKey
-     * @param OtpInfo $otpInfo
+     * @param string $userId
+     * @param string $otpKey
      *
      * @return void
      */

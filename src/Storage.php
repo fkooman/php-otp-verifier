@@ -32,9 +32,6 @@ class Storage implements OtpStorageInterface
     /** @var \PDO */
     private $dbh;
 
-    /**
-     * @param \PDO $dbh
-     */
     public function __construct(PDO $dbh)
     {
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -68,8 +65,7 @@ class Storage implements OtpStorageInterface
     }
 
     /**
-     * @param string  $userId
-     * @param OtpInfo $otpInfo
+     * @param string $userId
      *
      * @return void
      */
@@ -112,9 +108,8 @@ class Storage implements OtpStorageInterface
     }
 
     /**
-     * @param string    $userId
-     * @param string    $otpKey
-     * @param \DateTime $dateTime
+     * @param string $userId
+     * @param string $otpKey
      *
      * @return bool
      */
@@ -143,8 +138,6 @@ class Storage implements OtpStorageInterface
     }
 
     /**
-     * @param \DateTime $dateTime
-     *
      * @return void
      */
     public function cleanOtpLog(DateTime $dateTime)
