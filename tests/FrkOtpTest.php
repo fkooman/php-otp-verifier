@@ -82,42 +82,29 @@ class FrkOtpTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider hotpTestVectors
-     *
-     * @param string $otpKey
-     * @param string $otpSecret
-     * @param string $otpHashAlgorithm
-     * @param int    $otpDigits
-     * @param int    $otpCounter
-     */
-    public function testHotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter)
+    public function testHotp()
     {
         $frkOtp = new FrkOtp();
-        $this->assertSame($otpKey, $frkOtp->hotp($otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter));
-        $this->assertTrue($frkOtp->verifyHotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter));
+        foreach ($this->hotpTestVectors() as $vectorData) {
+            list($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter) = $vectorData;
+            $this->assertSame($otpKey, $frkOtp->hotp($otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter));
+            $this->assertTrue($frkOtp->verifyHotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $otpCounter));
+        }
     }
 
-    /**
-     * @dataProvider totpTestVectors
-     *
-     * @param string    $otpKey
-     * @param string    $otpSecret
-     * @param string    $otpHashAlgorithm
-     * @param int       $otpDigits
-     * @param \DateTime $dateTime
-     * @param int       $totpPeriod
-     */
-    public function testTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, DateTime $dateTime, $totpPeriod)
+    public function testTotp()
     {
-        if (false !== $unixTime = $dateTime->getTimestamp()) {
-            $frkOtp = new FrkOtp();
-            $this->assertSame($otpKey, $frkOtp->totp($otpSecret, $otpHashAlgorithm, $otpDigits, $unixTime, $totpPeriod));
-            $this->assertTrue($frkOtp->verifyTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $unixTime, $totpPeriod));
-        } else {
-            // this happens on 32 bit PHP, make sure the DateTime is actually
-            // after the "Year 2038 problem"
-            $this->assertTrue($dateTime > new DateTime('@'.PHP_INT_MAX));
+        $frkOtp = new FrkOtp();
+        foreach ($this->totpTestVectors() as $vectorData) {
+            list($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $dateTime, $totpPeriod) = $vectorData;
+            if (false !== $unixTime = $dateTime->getTimestamp()) {
+                $this->assertSame($otpKey, $frkOtp->totp($otpSecret, $otpHashAlgorithm, $otpDigits, $unixTime, $totpPeriod));
+                $this->assertTrue($frkOtp->verifyTotp($otpKey, $otpSecret, $otpHashAlgorithm, $otpDigits, $unixTime, $totpPeriod));
+            } else {
+                // this happens on 32 bit PHP, make sure the DateTime is actually
+                // after the "Year 2038 problem"
+                $this->assertTrue($dateTime > new DateTime('@'.PHP_INT_MAX));
+            }
         }
     }
 
