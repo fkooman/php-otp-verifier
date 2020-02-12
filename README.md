@@ -34,7 +34,7 @@ A database is needed to store OTP secrets and used OTP keys. Currently only
 SQLite is tested, but others may work.
 
 ```php
-    $storage = new Storage('sqlite:/path/to/db.sqlite');
+    $storage = new fkooman\Otp\Storage(new PDO('sqlite:/path/to/db.sqlite'));
 ```
 
 You can call `init()` on the `Storage` object to initialize the database, do
@@ -55,7 +55,7 @@ The default TOTP configuration is:
 You can modify these by calling the respective methods:
 
 ```php
-    $totp = new Totp($storage);
+    $totp = new fkooman\Otp\Totp($storage);
     $totp->setHashAlgorithm('sha256');
     $totp->setDigits(8);
     $totp->setPeriod(15);
@@ -72,7 +72,7 @@ example generate an OTP secret, generate a QR code and allow the user to
 import that in their OTP application.
 
 ```php
-    $otpSecret = Totp::generateSecret();
+    $otpSecret = fkooman\Otp\Totp::generateSecret();
 ```
 
 Most (T)OTP applications can handle a QR code for enrollment, making it much
@@ -81,7 +81,7 @@ easier for users to configure their application. This library can generate a
 to make this easier with all the right parameters set:
 
 ```php
-    $totp = new Totp($storage);
+    $totp = new fkooman\Otp\Totp($storage);
     $userId = 'foo@example.org';
     $totp->getEnrollmentUri($userId, $otpSecret, 'My Service Inc.');
 ```
@@ -100,8 +100,8 @@ registration:
     $totp->register($userId, $otpSecret, $otpKey);
 ```
 
-The `Totp::register` method will throw an `OtpException` if registration 
-failed.
+The `fkooman\Otp\Totp::register` method will throw an 
+`fkooman\Otp\OtpException` if registration failed.
 
 ## Verification
 
@@ -115,7 +115,7 @@ OTP secret.
     try {
         $totp->verify($userId, $otpKey);
         echo 'VALID';
-    } catch (OtpException $e) {
+    } catch (fkooman\Otp\OtpException $e) {
         echo 'NOT VALID: '.$e->getMessage();
     }
 ```
@@ -123,9 +123,9 @@ OTP secret.
 **NOTE**: you can not reuse the OTP key used for registration for verification
 afterwards. You have to wait for the next window.
 
-The `Totp::verify` method will throw an `OtpException`, when the provided user
-has no OTP secret, when the OTP code is invalid, the OTP code is replayed, or 
-when the limit of verifications was reached.
+The `fkooman\Otp\Totp::verify` method will throw an `fkooman\Otp\OtpException`, 
+when the provided user has no OTP secret, when the OTP code is invalid, the OTP 
+code is replayed, or when the limit of verifications was reached.
 
 # Inspiration
 
