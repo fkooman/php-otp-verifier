@@ -15,7 +15,7 @@
             "fkooman\\Otp\\Tests\\": "tests/"
         }
     },
-    "description": "OTP Validation Library",
+    "description": "Small OTP verification library",
     "license": "MIT",
     "name": "fkooman/otp-verifier",
     "require": {

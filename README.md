@@ -1,3 +1,12 @@
+**Summary**: Small OTP verification library
+
+**Description**: PHP library to verify OTP codes and protect against replay and 
+brute force attacks.
+
+**License**: MIT
+
+# Introduction
+
 PHP library to verify OTP codes and protect against replay and brute force 
 attacks with support for PHP >= 5.4.
 
